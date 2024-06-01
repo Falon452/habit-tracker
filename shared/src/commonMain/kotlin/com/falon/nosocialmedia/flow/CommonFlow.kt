@@ -1,6 +1,5 @@
 package com.falon.nosocialmedia.flow
 
 import kotlinx.coroutines.flow.Flow
-class CommonFlow<T>(flow: Flow<T>) {
 
-}
+expect class CommonFlow<T>(flow: Flow<T>): Flow<T>
