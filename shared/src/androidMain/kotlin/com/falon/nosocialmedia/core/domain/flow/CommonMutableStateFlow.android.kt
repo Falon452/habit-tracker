@@ -1,4 +1,4 @@
-package com.falon.nosocialmedia.flow
+package com.falon.nosocialmedia.core.domain.flow
 
 import kotlinx.coroutines.flow.MutableStateFlow
 

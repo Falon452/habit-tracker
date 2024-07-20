@@ -1,5 +1,6 @@
-package com.falon.nosocialmedia.flow
+package com.falon.nosocialmedia.core.domain.flow
 
+import com.falon.nosocialmedia.core.domain.flow.CommonMutableStateFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class IOSMutableStateFlow<T>(

@@ -16,3 +16,62 @@ local.properties
 androidApp/build**
 shared/build**
 buildSrc/build**
+
+
+# Xcode
+*.xcuserstate
+*.xcworkspace
+xcuserdata/
+DerivedData/
+build/
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Scheme Management
+*.xcscheme
+xcschememanagement.plist
+
+# Swift Package Manager
+Packages/
+Package.pins
+Package.resolved
+.build/
+
+# Gradle files
+.gradle/
+build/
+
+# Local configuration files
+local.properties
+*.iml
+
+# IntelliJ IDEA files
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Android Studio files
+*.apk
+*.ap_
+*.hprof
+
+# MacOS files
+.DS_Store
+
+# Windows files
+Thumbs.db
+
+# Kotlin specific
+*.class
+
+# Exclude IDE-specific files
+deploymentTargetSelector.xml
+compiler.xml
+misc.xml
+
+# Exclude build directories
+androidApp/build/
+shared/build/
