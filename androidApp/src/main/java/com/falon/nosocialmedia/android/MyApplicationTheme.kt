@@ -8,29 +8,36 @@ import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.falon.nosocialmedia.android.core.theme.darkColors
+import com.falon.nosocialmedia.android.core.theme.lightColors
 
 @Composable
 fun MyApplicationTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colors = if (darkTheme) {
+    val colorScheme = if (darkTheme) {
         darkColorScheme(
-            primary = Color(0xFFBB86FC),
-            secondary = Color(0xFF03DAC5),
-            tertiary = Color(0xFF3700B3)
+            primary = darkColors.primary,
+            background = darkColors.background,
+            onPrimary = darkColors.onPrimary,
+            onBackground = darkColors.onBackground,
+            surface = darkColors.surface,
+            onSurface = darkColors.onSurface,
         )
     } else {
         lightColorScheme(
-            primary = Color(0xFF6200EE),
-            secondary = Color(0xFF03DAC5),
-            tertiary = Color(0xFF3700B3)
+            primary = lightColors.primary,
+            background = lightColors.background,
+            onPrimary = lightColors.onPrimary,
+            onBackground = lightColors.onBackground,
+            surface = lightColors.surface,
+            onSurface = lightColors.onSurface,
         )
     }
     val typography = Typography(
@@ -47,7 +54,7 @@ fun MyApplicationTheme(
     )
 
     MaterialTheme(
-        colorScheme = colors,
+        colorScheme = colorScheme,
         typography = typography,
         shapes = shapes,
         content = content
