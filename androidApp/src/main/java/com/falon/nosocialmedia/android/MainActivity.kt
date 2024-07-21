@@ -16,9 +16,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.falon.nosocialmedia.Greeting
 import com.falon.nosocialmedia.android.socialcounter.presentation.AndroidSocialCounterViewModel
+import com.falon.nosocialmedia.android.socialcounter.presentation.NoSocialMediasScreen
 import com.falon.nosocialmedia.android.socialcounter.presentation.Routes
+import com.falon.nosocialmedia.socialcounter.presentation.factory.NoSocialMediasStateFactory
 import com.falon.nosocialmedia.socialcounter.presentation.viewmodel.NoSocialMediasViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,23 +33,18 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    GreetingView(Greeting().greet())
+                    NoSocialMediasRoot()
                 }
             }
         }
     }
 }
 
-@Composable
-fun GreetingView(text: String) {
-    Text(text = text)
-}
-
 @Preview
 @Composable
 fun DefaultPreview() {
     MyApplicationTheme {
-        GreetingView("Hello, Android!")
+        NoSocialMediasRoot()
     }
 }
 
@@ -59,6 +58,10 @@ fun NoSocialMediasRoot() {
         composable(route = Routes.NO_SOCIAL_MEDIA) {
             val viewModel = hiltViewModel<AndroidSocialCounterViewModel>()
             val state by viewModel.state.collectAsState()
+            NoSocialMediasScreen(
+                viewState = state,
+                onSocialMediaClick = {viewModel.onSocialMediaClicked(it) },
+            )
         }
     }
 }
