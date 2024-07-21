@@ -10,10 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material.Card
 import androidx.compose.material.Scaffold
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Text
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,7 +61,7 @@ fun ClickableCard(item: SocialMediaItem, onClick: () -> Unit) {
             .clickable {
                 onClick()
             },
-        elevation = CardDefaults.elevatedCardElevation()
+        elevation = 8.dp
     ) {
         Box {
             Image(

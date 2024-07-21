@@ -2,11 +2,11 @@ package com.falon.nosocialmedia.android
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Shapes
-import androidx.compose.material3.Typography
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Shapes
+import androidx.compose.material.Typography
+import androidx.compose.material.darkColors
+import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -22,7 +22,7 @@ fun MyApplicationTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = if (darkTheme) {
-        darkColorScheme(
+        lightColors(
             primary = darkColors.primary,
             background = darkColors.background,
             onPrimary = darkColors.onPrimary,
@@ -31,7 +31,7 @@ fun MyApplicationTheme(
             onSurface = darkColors.onSurface,
         )
     } else {
-        lightColorScheme(
+        darkColors(
             primary = lightColors.primary,
             background = lightColors.background,
             onPrimary = lightColors.onPrimary,
@@ -41,7 +41,7 @@ fun MyApplicationTheme(
         )
     }
     val typography = Typography(
-        bodyMedium = TextStyle(
+        body1 = TextStyle(
             fontFamily = FontFamily.Default,
             fontWeight = FontWeight.Normal,
             fontSize = 16.sp
@@ -54,7 +54,7 @@ fun MyApplicationTheme(
     )
 
     MaterialTheme(
-        colorScheme = colorScheme,
+        colors = colorScheme,
         typography = typography,
         shapes = shapes,
         content = content
