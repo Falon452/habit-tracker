@@ -1,7 +1,18 @@
-CREATE TABLE socialMedias(
+CREATE TABLE socialMediaEntity(
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    icon TEXT NOT NULL,
     daysCount INTEGER NOT NULL
 );
 
+getSocialMedias:
+SELECT *
+FROM socialMediaEntity;
+
+insertSocialMediaEntity:
+INSERT OR REPLACE
+INTO socialMediaEntity(
+    id,
+    name,
+    daysCount
+)
+VALUES (?, ?, ?);
