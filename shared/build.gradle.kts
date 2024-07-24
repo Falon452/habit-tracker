@@ -83,3 +83,9 @@ android {
     }
 }
 
+sqldelight {
+    database("NoSocialMediaDatabase") {
+        packageName = "com.falon.nosocialmedia.database"
+        sourceFolders = listOf("sqldelight")
+    }
+}

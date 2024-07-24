@@ -4,3 +4,4 @@ CREATE TABLE socialMedias(
     icon TEXT NOT NULL,
     daysCount INTEGER NOT NULL
 );
+
