@@ -8,4 +8,6 @@ interface NoSocialMediaRepository {
     fun observeSocialMedias(): CommonFlow<List<NoSocialCounter>>
 
     fun insertSocialMedias(noSocialCounter: NoSocialCounter)
+
+    fun getSocialMedia(id: Int): NoSocialCounter
 }

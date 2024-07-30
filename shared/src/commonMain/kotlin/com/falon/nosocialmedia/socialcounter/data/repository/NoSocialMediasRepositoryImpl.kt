@@ -32,4 +32,8 @@ class NoSocialMediasRepositoryImpl(
     override fun insertSocialMedias(noSocialCounter: NoSocialCounter) {
         queries.insertSocialMediaEntity(noSocialCounter.id.toLong(), noSocialCounter.name, noSocialCounter.numberOfDays.toLong())
     }
+
+    override fun getSocialMedia(id: Int): NoSocialCounter {
+        TODO()
+    }
 }

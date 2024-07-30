@@ -1,19 +1,19 @@
 package com.falon.nosocialmedia.socialcounter.domain.interactor
 
-import com.falon.nosocialmedia.socialcounter.domain.repository.NoSocialMediasCounterRepository
+import com.falon.nosocialmedia.socialcounter.domain.repository.NoSocialMediaRepository
 
 class IncreaseNoMediaCounterUseCase(
-    private val noSocialMediasCounterRepository: NoSocialMediasCounterRepository,
+    private val getSocialMediaByIdUseCase: GetSocialMediaByIdUseCase,
+    private val noSocialMediaRepository: NoSocialMediaRepository,
 ) {
 
     fun execute(id: Int) {
-        val value = noSocialMediasCounterRepository.getValue(id.toString(), FIRST_DAY)
-        println("DAMIAN $value")
-        noSocialMediasCounterRepository.update(id.toString(), value + 1)
-    }
+        val socialMedia = getSocialMediaByIdUseCase.execute(id)
 
-    private companion object {
+        val newSocialMedia = socialMedia.copy(
+            numberOfDays = socialMedia.numberOfDays +1
+        )
 
-        const val FIRST_DAY = 1
+        noSocialMediaRepository.insertSocialMedias(newSocialMedia)
     }
 }

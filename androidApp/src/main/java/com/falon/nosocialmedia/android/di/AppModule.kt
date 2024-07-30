@@ -2,11 +2,14 @@ package com.falon.nosocialmedia.android.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.falon.nosocialmedia.data.NoSocialMediaDatabase
+import com.falon.nosocialmedia.socialcounter.data.local.DatabaseDriverFactory
 import com.falon.nosocialmedia.socialcounter.data.repository.KeyValuePersistentStorage
-import com.falon.nosocialmedia.socialcounter.data.repository.NoSocialMediasCounterRepositoryImpl
+import com.falon.nosocialmedia.socialcounter.data.repository.NoSocialMediasRepositoryImpl
 import com.falon.nosocialmedia.socialcounter.data.sources.KeyValuePersistentStorageImpl
+import com.falon.nosocialmedia.socialcounter.domain.interactor.GetSocialMediaByIdUseCase
 import com.falon.nosocialmedia.socialcounter.domain.interactor.IncreaseNoMediaCounterUseCase
-import com.falon.nosocialmedia.socialcounter.domain.repository.NoSocialMediasCounterRepository
+import com.falon.nosocialmedia.socialcounter.domain.repository.NoSocialMediaRepository
 import com.falon.nosocialmedia.socialcounter.presentation.factory.NoSocialMediasStateFactory
 import com.falon.nosocialmedia.socialcounter.presentation.mapper.NoSocialMediasViewStateMapper
 import dagger.Module
@@ -30,16 +33,27 @@ object AppModule {
         KeyValuePersistentStorageImpl(sharedPreferences)
 
     @Provides
+    @Singleton
     fun provideNoSocialMediasCounterRepository(
-        keyValuePersistentStorage: KeyValuePersistentStorage,
-    ): NoSocialMediasCounterRepository =
-        NoSocialMediasCounterRepositoryImpl(keyValuePersistentStorage)
+        @ApplicationContext context: Context,
+    ): NoSocialMediaRepository =
+        NoSocialMediasRepositoryImpl(
+            NoSocialMediaDatabase(DatabaseDriverFactory(context).provide())
+        )
+
+    @Provides
+    fun provideGetSocialMediaByIdUseCase(
+        noSocialMediaRepository: NoSocialMediaRepository,
+    ): GetSocialMediaByIdUseCase =
+        GetSocialMediaByIdUseCase(noSocialMediaRepository = noSocialMediaRepository)
 
     @Provides
     fun provideIncreaseNoMediaCounterUseCase(
-        noSocialMediasCounterRepository: NoSocialMediasCounterRepository,
+        getSocialMediaByIdUseCase: GetSocialMediaByIdUseCase,
+        noSocialMediasCounterRepository: NoSocialMediaRepository,
     ): IncreaseNoMediaCounterUseCase = IncreaseNoMediaCounterUseCase(
-        noSocialMediasCounterRepository = noSocialMediasCounterRepository
+        getSocialMediaByIdUseCase = getSocialMediaByIdUseCase,
+        noSocialMediaRepository = noSocialMediasCounterRepository,
     )
 
     @Provides
