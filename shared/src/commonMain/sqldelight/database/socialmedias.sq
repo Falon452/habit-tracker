@@ -16,3 +16,8 @@ INTO socialMediaEntity(
     daysCount
 )
 VALUES (?, ?, ?);
+
+getSocialMedia:
+SELECT *
+FROM socialMediaEntity
+WHERE id = ?;

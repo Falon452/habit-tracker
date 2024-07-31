@@ -7,7 +7,7 @@ class GetSocialMediaByIdUseCase(
     private val noSocialMediaRepository: NoSocialMediaRepository,
 ) {
 
-    fun execute(id: Int): NoSocialCounter {
+    fun execute(id: Int): NoSocialCounter? {
         return noSocialMediaRepository.getSocialMedia(id)
     }
 }

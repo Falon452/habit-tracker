@@ -9,6 +9,9 @@ class IncreaseNoMediaCounterUseCase(
 
     fun execute(id: Int) {
         val socialMedia = getSocialMediaByIdUseCase.execute(id)
+        if (socialMedia == null) {
+            throw IllegalStateException("TODO Fixme")
+        }
 
         val newSocialMedia = socialMedia.copy(
             numberOfDays = socialMedia.numberOfDays +1
