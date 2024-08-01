@@ -11,7 +11,7 @@ import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.map
 
 class NoSocialMediasRepositoryImpl(
-    private val db: NoSocialMediaDatabase
+    private val db: NoSocialMediaDatabase,
 ): NoSocialMediaRepository {
 
     private val queries = db.socialmediasQueries
@@ -35,11 +35,26 @@ class NoSocialMediasRepositoryImpl(
 
     override fun getSocialMedia(id: Int): NoSocialCounter? {
         val entity = queries.getSocialMedias().executeAsOneOrNull()
-        if (entity != null)
-        return NoSocialCounter(
-            entity.id.toInt(),
-            entity.daysCount.toInt(),
-            entity.name,
-        ) else return null
+        return if (entity != null) {
+            NoSocialCounter(
+                entity.id.toInt(),
+                entity.daysCount.toInt(),
+                entity.name,
+            )
+        } else {
+            null
+        }
+    }
+
+    override fun initializeDatabase() {
+        val existingItems = queries.getSocialMedias().executeAsList()
+        if (existingItems.isEmpty()) {
+            val predefinedItems = listOf(
+                NoSocialCounter(1, 12, "Instagram"),
+                NoSocialCounter(2, 12, "Facebook"),
+                // Add the rest of your predefined data here...
+            )
+            predefinedItems.forEach { insertSocialMedias(it) }
+        }
     }
 }

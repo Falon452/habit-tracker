@@ -1,6 +1,7 @@
 package com.falon.nosocialmedia.socialcounter.presentation.viewmodel
 
 import com.falon.nosocialmedia.socialcounter.domain.interactor.IncreaseNoMediaCounterUseCase
+import com.falon.nosocialmedia.socialcounter.domain.interactor.PopulateDatabaseUseCase
 import com.falon.nosocialmedia.socialcounter.presentation.factory.NoSocialMediasStateFactory
 import com.falon.nosocialmedia.socialcounter.presentation.mapper.NoSocialMediasViewStateMapper
 import com.falon.nosocialmedia.socialcounter.presentation.viewstate.NoSocialMediasViewState
@@ -13,10 +14,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 class NoSocialMediasViewModel(
-    private val viewStateFactory: NoSocialMediasStateFactory,
-    private val coroutineScope: CoroutineScope?,
+    viewStateFactory: NoSocialMediasStateFactory,
+    coroutineScope: CoroutineScope?,
     private val viewStateMapper: NoSocialMediasViewStateMapper,
     private val increaseNoMediaCounterUseCase: IncreaseNoMediaCounterUseCase,
+    private val populateDatabaseUseCase: PopulateDatabaseUseCase,
 ) {
 
     private val viewModelScope = coroutineScope ?: CoroutineScope(Dispatchers.Main)
@@ -29,6 +31,10 @@ class NoSocialMediasViewModel(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = viewStateMapper.from(_state.value)
         )
+
+    init {
+        populateDatabaseUseCase.execute()
+    }
 
     fun onSocialMediaClicked(id: Int) {
         increaseNoMediaCounterUseCase.execute(id)

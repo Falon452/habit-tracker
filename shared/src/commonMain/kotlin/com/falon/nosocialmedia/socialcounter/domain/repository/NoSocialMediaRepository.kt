@@ -10,4 +10,6 @@ interface NoSocialMediaRepository {
     fun insertSocialMedias(noSocialCounter: NoSocialCounter)
 
     fun getSocialMedia(id: Int): NoSocialCounter?
+
+    fun initializeDatabase()
 }
