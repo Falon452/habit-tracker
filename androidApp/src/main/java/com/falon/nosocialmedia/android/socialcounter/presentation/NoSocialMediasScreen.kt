@@ -42,9 +42,10 @@ fun NoSocialMediasScreen(
                 .padding(16.dp)
         ) {
             items(viewState.items.size) { index ->
+                val item = viewState.items[index]
                 ClickableCard(
                     item = viewState.items[index],
-                    onClick = { onSocialMediaClick(index) }
+                    onClick = { onSocialMediaClick(item.id) }
                 )
             }
         }

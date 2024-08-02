@@ -9,6 +9,7 @@ import com.falon.nosocialmedia.socialcounter.data.repository.NoSocialMediasRepos
 import com.falon.nosocialmedia.socialcounter.data.sources.KeyValuePersistentStorageImpl
 import com.falon.nosocialmedia.socialcounter.domain.interactor.GetSocialMediaByIdUseCase
 import com.falon.nosocialmedia.socialcounter.domain.interactor.IncreaseNoMediaCounterUseCase
+import com.falon.nosocialmedia.socialcounter.domain.interactor.ObserveSocialMediaUseCase
 import com.falon.nosocialmedia.socialcounter.domain.interactor.PopulateDatabaseUseCase
 import com.falon.nosocialmedia.socialcounter.domain.repository.NoSocialMediaRepository
 import com.falon.nosocialmedia.socialcounter.presentation.factory.NoSocialMediasStateFactory
@@ -70,4 +71,12 @@ object AppModule {
     @Provides
     fun provideNoSocialMediasViewStateMapper(): NoSocialMediasViewStateMapper =
         NoSocialMediasViewStateMapper()
+
+    @Provides
+    fun provideObserveSocialMediaUseCase(
+        repository: NoSocialMediaRepository,
+    ): ObserveSocialMediaUseCase =
+        ObserveSocialMediaUseCase(
+            repository = repository,
+        )
 }

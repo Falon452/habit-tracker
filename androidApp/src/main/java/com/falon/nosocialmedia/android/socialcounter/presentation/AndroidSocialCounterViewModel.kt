@@ -3,6 +3,7 @@ package com.falon.nosocialmedia.android.socialcounter.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.falon.nosocialmedia.socialcounter.domain.interactor.IncreaseNoMediaCounterUseCase
+import com.falon.nosocialmedia.socialcounter.domain.interactor.ObserveSocialMediaUseCase
 import com.falon.nosocialmedia.socialcounter.domain.interactor.PopulateDatabaseUseCase
 import com.falon.nosocialmedia.socialcounter.presentation.factory.NoSocialMediasStateFactory
 import com.falon.nosocialmedia.socialcounter.presentation.mapper.NoSocialMediasViewStateMapper
@@ -16,6 +17,7 @@ class AndroidSocialCounterViewModel @Inject constructor(
     viewStateMapper: NoSocialMediasViewStateMapper,
     increaseNoMediaCounterUseCase: IncreaseNoMediaCounterUseCase,
     populateDatabaseUseCase: PopulateDatabaseUseCase,
+    observeSocialMediasUseCase: ObserveSocialMediaUseCase,
 ): ViewModel() {
 
     private val viewModel by lazy {
@@ -25,6 +27,7 @@ class AndroidSocialCounterViewModel @Inject constructor(
             viewStateMapper = viewStateMapper,
             increaseNoMediaCounterUseCase = increaseNoMediaCounterUseCase,
             populateDatabaseUseCase = populateDatabaseUseCase,
+            observeSocialMediasUseCase = observeSocialMediasUseCase,
         )
     }
 

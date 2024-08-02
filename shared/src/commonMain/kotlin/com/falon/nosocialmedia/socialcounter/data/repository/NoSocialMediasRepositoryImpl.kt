@@ -34,7 +34,7 @@ class NoSocialMediasRepositoryImpl(
     }
 
     override fun getSocialMedia(id: Int): NoSocialCounter? {
-        val entity = queries.getSocialMedias().executeAsOneOrNull()
+        val entity = queries.getSocialMedia(id.toLong()).executeAsOneOrNull()
         return if (entity != null) {
             NoSocialCounter(
                 entity.id.toInt(),
@@ -50,8 +50,8 @@ class NoSocialMediasRepositoryImpl(
         val existingItems = queries.getSocialMedias().executeAsList()
         if (existingItems.isEmpty()) {
             val predefinedItems = listOf(
-                NoSocialCounter(1, 12, "Instagram"),
-                NoSocialCounter(2, 12, "Facebook"),
+                NoSocialCounter(1, 1, "Instagram"),
+                NoSocialCounter(2, 1, "Facebook"),
                 // Add the rest of your predefined data here...
             )
             predefinedItems.forEach { insertSocialMedias(it) }
