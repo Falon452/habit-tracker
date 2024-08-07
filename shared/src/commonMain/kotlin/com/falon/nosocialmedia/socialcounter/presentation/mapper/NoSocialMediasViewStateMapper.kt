@@ -10,9 +10,9 @@ class NoSocialMediasViewStateMapper {
         return NoSocialMediasViewState(
             items = state.noSocialsCounter.map {
                 SocialMediaItem(
-                    id = it.id,
-                    name = it.name,
-                    count = it.numberOfDays,
+                    id = it.id.toInt(),
+                    name = it.name.value,
+                    count = it.numberOfDays.toInt(),
                 )
             }
         )

@@ -3,24 +3,31 @@ package com.falon.nosocialmedia.socialcounter.data.repository
 import com.falon.nosocialmedia.core.domain.flow.CommonFlow
 import com.falon.nosocialmedia.core.domain.flow.toCommonFlow
 import com.falon.nosocialmedia.data.NoSocialMediaDatabase
-import com.falon.nosocialmedia.socialcounter.domain.model.NoSocialCounter
+import com.falon.nosocialmedia.socialcounter.domain.model.DomainError
+import com.falon.nosocialmedia.socialcounter.domain.model.HabitCounter
 import com.falon.nosocialmedia.socialcounter.domain.repository.NoSocialMediaRepository
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Result
+import com.github.michaelbull.result.filterErrors
+import com.github.michaelbull.result.filterValues
+import com.github.michaelbull.result.flatMapEither
+import com.github.michaelbull.result.mapEither
+import com.github.michaelbull.result.mapError
+import com.github.michaelbull.result.runCatching
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
-
 import kotlinx.coroutines.flow.map
 
 class NoSocialMediasRepositoryImpl(
     private val db: NoSocialMediaDatabase,
-): NoSocialMediaRepository {
+) : NoSocialMediaRepository {
 
     private val queries = db.socialmediasQueries
 
-    override fun observeSocialMedias(): CommonFlow<List<NoSocialCounter>> {
-        return queries.getSocialMedias().asFlow().mapToList().map {
-            socialMediaEntities ->
+    override fun observeSocialMedias(): CommonFlow<List<Result<HabitCounter, DomainError>>> {
+        return queries.getSocialMedias().asFlow().mapToList().map { socialMediaEntities ->
             socialMediaEntities.map {
-                NoSocialCounter(
+                HabitCounter.of(
                     it.id.toInt(),
                     it.daysCount.toInt(),
                     it.name,
@@ -29,32 +36,41 @@ class NoSocialMediasRepositoryImpl(
         }.toCommonFlow()
     }
 
-    override fun insertSocialMedias(noSocialCounter: NoSocialCounter) {
-        queries.insertSocialMediaEntity(noSocialCounter.id.toLong(), noSocialCounter.name, noSocialCounter.numberOfDays.toLong())
-    }
-
-    override fun getSocialMedia(id: Int): NoSocialCounter? {
-        val entity = queries.getSocialMedia(id.toLong()).executeAsOneOrNull()
-        return if (entity != null) {
-            NoSocialCounter(
-                entity.id.toInt(),
-                entity.daysCount.toInt(),
-                entity.name,
+    override fun insertSocialMedias(habitCounter: HabitCounter): Result<Unit, DomainError.DatabaseError> {
+        return runCatching {
+            queries.insertSocialMediaEntity(
+                habitCounter.id.toLong(),
+                habitCounter.name.value,
+                habitCounter.numberOfDays.toLong()
             )
-        } else {
-            null
-        }
+        }.mapError {  DomainError.DatabaseError(it) }
     }
 
-    override fun initializeDatabase() {
+    override fun getSocialMedia(id: Int): Result<HabitCounter, DomainError> {
+        return runCatching { queries.getSocialMedia(id.toLong()).executeAsOne() }
+            .flatMapEither(
+                failure = { Err(DomainError.DatabaseError(it)) },
+                success = {
+                    HabitCounter.of(
+                        it.id.toInt(),
+                        it.daysCount.toInt(),
+                        it.name,
+                    )
+                }
+            )
+    }
+
+    override fun initializeDatabase(): List<DomainError> {
         val existingItems = queries.getSocialMedias().executeAsList()
         if (existingItems.isEmpty()) {
             val predefinedItems = listOf(
-                NoSocialCounter(1, 1, "Instagram"),
-                NoSocialCounter(2, 1, "Facebook"),
-                // Add the rest of your predefined data here...
+                HabitCounter.of(1, 1, "Instagram"),
+                HabitCounter.of(2, 1, "Instagram"),
             )
-            predefinedItems.forEach { insertSocialMedias(it) }
+            predefinedItems.filterValues().forEach(::insertSocialMedias)
+            return predefinedItems.filterErrors()
+        } else {
+            return listOf(DomainError.DatabaseIsAlreadyPopulated)
         }
     }
 }

@@ -8,11 +8,11 @@ plugins {
 
 android {
     namespace = "com.falon.nosocialmedia.android"
-    compileSdk = 33
+    compileSdk = 34
     defaultConfig {
         applicationId = "com.falon.nosocialmedia.android"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
     }
@@ -31,6 +31,13 @@ android {
         getByName("release") {
             isMinifyEnabled = false
         }
+    }
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 

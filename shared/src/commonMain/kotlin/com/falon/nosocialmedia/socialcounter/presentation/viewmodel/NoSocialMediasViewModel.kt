@@ -6,7 +6,10 @@ import com.falon.nosocialmedia.socialcounter.domain.interactor.PopulateDatabaseU
 import com.falon.nosocialmedia.socialcounter.presentation.factory.NoSocialMediasStateFactory
 import com.falon.nosocialmedia.socialcounter.presentation.mapper.NoSocialMediasViewStateMapper
 import com.falon.nosocialmedia.socialcounter.presentation.viewstate.NoSocialMediasViewState
-import kotlinx.coroutines.CoroutineExceptionHandler
+import com.github.michaelbull.result.filterErrors
+import com.github.michaelbull.result.filterValues
+import com.github.michaelbull.result.onFailure
+import com.github.michaelbull.result.onSuccess
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -40,10 +43,16 @@ class NoSocialMediasViewModel(
         )
 
     init {
-        populateDatabaseUseCase.execute()
+        populateDatabaseUseCase.execute().forEach {
+            println("Error $it")
+        }
         observeSocialMediasUseCase.execute()
             .onEach { socialMedias ->
-                _state.value = _state.value.copy(noSocialsCounter = socialMedias)
+                _state.value = _state.value.copy(noSocialsCounter = socialMedias.filterValues())
+
+                socialMedias.filterErrors().onEach {
+                    println("Got error $it")
+                }
             }
             .catch { e ->
                 println("Error observing social media use case: ${e.message}")
@@ -53,5 +62,13 @@ class NoSocialMediasViewModel(
 
     fun onSocialMediaClicked(id: Int) {
         increaseNoMediaCounterUseCase.execute(id)
+            .onSuccess {
+                println("SHOW TOAST TODO")
+                // show toast
+            }
+            .onFailure {
+                println("FAILURE $it")
+            }
+
     }
 }

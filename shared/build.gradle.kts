@@ -32,6 +32,7 @@ kotlin {
                 implementation(Deps.sqlDelightRuntime)
                 implementation(Deps.sqlDelightCoroutinesExtensions)
                 implementation(Deps.kotlinDateTime)
+                implementation(Deps.kotlinResult)
             }
         }
         val commonTest by getting {
@@ -47,7 +48,7 @@ kotlin {
                 implementation(Deps.sqlDelightAndroidDriver)
             }
         }
-        val androidTest by getting
+        val androidUnitTest by getting
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
@@ -76,10 +77,15 @@ kotlin {
 
 android {
     namespace = "com.plcoding.translator_kmm"
-    compileSdk = 33
+    compileSdk = 34
     defaultConfig {
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
