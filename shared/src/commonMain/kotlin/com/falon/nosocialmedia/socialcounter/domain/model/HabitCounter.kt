@@ -4,37 +4,49 @@ import com.falon.nosocialmedia.socialcounter.domain.model.NotEmptyString.Compani
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
-import kotlinx.datetime.LocalTime
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlin.jvm.JvmInline
 
 sealed class HabitCounter(
     open val id: UInt,
     open val numberOfDays: UInt,
     open val name: NotEmptyString,
-    open val lastIncreaseTime: LocalTime,
+    open val lastIncreaseDateTime: LocalDateTime,
 ) {
 
     private data class HabitCounterDataClass(
         override val id: UInt,
         override val numberOfDays: UInt,
         override val name: NotEmptyString,
-        override val lastIncreaseTime: LocalTime,
-    ) : HabitCounter(id, numberOfDays, name, lastIncreaseTime)
+        override val lastIncreaseDateTime: LocalDateTime,
+    ) : HabitCounter(id, numberOfDays, name, lastIncreaseDateTime)
 
 
     companion object {
 
-        fun of(id: Int, numberOfDays: Int, name: String, lastIncreaseTime: LocalTime): Result<HabitCounter, DomainError> {
+        const val INITIAL_COUNTER_VALUE = 0
+
+        fun of(id: Int, numberOfDays: Int, name: String, lastIncreaseTimestamp: Long): Result<HabitCounter, DomainError> {
             val notEmptyNameResult = name.notEmptyStringOf()
+            val dateTime: LocalDateTime
 
             if (id <= 0) {
                 return Err(DomainError.RequireIdToBePositive)
             }
-            if (numberOfDays <= 0) {
-                return Err(DomainError.RequireNumberOfDaysToBePositive)
+            if (numberOfDays < 0) {
+                return Err(DomainError.RequireNumberOfDaysToBeNotNegative)
             }
             if (notEmptyNameResult.isErr) {
                 return Err(DomainError.EmptyStringError)
+            }
+            try {
+                dateTime = Instant.fromEpochMilliseconds(lastIncreaseTimestamp).toLocalDateTime(TimeZone.currentSystemDefault())
+            } catch (e: IllegalArgumentException) {
+                return Err(DomainError.LocalDateTimeConversionError)
             }
 
             return Ok(
@@ -42,14 +54,14 @@ sealed class HabitCounter(
                     id = id.toUInt(),
                     numberOfDays = numberOfDays.toUInt(),
                     name = notEmptyNameResult.value,
-                    lastIncreaseTime =
+                    lastIncreaseDateTime = dateTime,
                 )
             )
         }
 
-        fun HabitCounter.getIncreasedCounter(): Result<HabitCounter, WasTodayUpdatedError> {
+        fun HabitCounter.getIncreasedCounter(): Result<HabitCounter, DomainError.WasTodayUpdatedError> {
             if (wasTodayIncreased()) {
-                return Err(WasTodayUpdatedError)
+                return Err(DomainError.WasTodayUpdatedError)
             }
             return Ok(
                 (this as HabitCounterDataClass).copy(
@@ -61,7 +73,9 @@ sealed class HabitCounter(
         }
 
         private fun HabitCounter.wasTodayIncreased(): Boolean {
-            return lastIncreaseTime.
+            val nowLocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+            return lastIncreaseDateTime.date == nowLocalDateTime.date &&
+                    numberOfDays != INITIAL_COUNTER_VALUE.toUInt()
         }
     }
 }
@@ -70,14 +84,15 @@ sealed class HabitCounter(
  * All possible things that can happen in the use-cases
  */
 
-object WasTodayUpdatedError
 sealed class DomainError {
 
     object EmptyStringError : DomainError()
     object DatabaseIsAlreadyPopulated : DomainError()
     class DatabaseError(throwable: Throwable) : DomainError()
     object RequireIdToBePositive : DomainError()
-    object RequireNumberOfDaysToBePositive : DomainError()
+    object RequireNumberOfDaysToBeNotNegative : DomainError()
+    object LocalDateTimeConversionError : DomainError()
+    object WasTodayUpdatedError : DomainError()
 }
 
 @JvmInline

@@ -5,21 +5,24 @@ import com.falon.nosocialmedia.core.domain.flow.toCommonFlow
 import com.falon.nosocialmedia.data.NoSocialMediaDatabase
 import com.falon.nosocialmedia.socialcounter.domain.model.DomainError
 import com.falon.nosocialmedia.socialcounter.domain.model.HabitCounter
+import com.falon.nosocialmedia.socialcounter.domain.model.HabitCounter.Companion.INITIAL_COUNTER_VALUE
 import com.falon.nosocialmedia.socialcounter.domain.repository.NoSocialMediaRepository
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.filterErrors
 import com.github.michaelbull.result.filterValues
 import com.github.michaelbull.result.flatMapEither
-import com.github.michaelbull.result.mapEither
 import com.github.michaelbull.result.mapError
 import com.github.michaelbull.result.runCatching
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 
 class NoSocialMediasRepositoryImpl(
-    private val db: NoSocialMediaDatabase,
+    db: NoSocialMediaDatabase,
 ) : NoSocialMediaRepository {
 
     private val queries = db.socialmediasQueries
@@ -31,6 +34,7 @@ class NoSocialMediasRepositoryImpl(
                     it.id.toInt(),
                     it.daysCount.toInt(),
                     it.name,
+                    it.lastIncreaseTimestamp,
                 )
             }
         }.toCommonFlow()
@@ -41,9 +45,11 @@ class NoSocialMediasRepositoryImpl(
             queries.insertSocialMediaEntity(
                 habitCounter.id.toLong(),
                 habitCounter.name.value,
-                habitCounter.numberOfDays.toLong()
+                habitCounter.numberOfDays.toLong(),
+                habitCounter.lastIncreaseDateTime.toInstant(TimeZone.currentSystemDefault())
+                    .toEpochMilliseconds(),
             )
-        }.mapError {  DomainError.DatabaseError(it) }
+        }.mapError { DomainError.DatabaseError(it) }
     }
 
     override fun getSocialMedia(id: Int): Result<HabitCounter, DomainError> {
@@ -55,6 +61,7 @@ class NoSocialMediasRepositoryImpl(
                         it.id.toInt(),
                         it.daysCount.toInt(),
                         it.name,
+                        it.lastIncreaseTimestamp,
                     )
                 }
             )
@@ -64,8 +71,18 @@ class NoSocialMediasRepositoryImpl(
         val existingItems = queries.getSocialMedias().executeAsList()
         if (existingItems.isEmpty()) {
             val predefinedItems = listOf(
-                HabitCounter.of(1, 1, "Instagram"),
-                HabitCounter.of(2, 1, "Instagram"),
+                HabitCounter.of(
+                    1,
+                    INITIAL_COUNTER_VALUE,
+                    "Instagram",
+                    Clock.System.now().toEpochMilliseconds()
+                ),
+                HabitCounter.of(
+                    2,
+                    INITIAL_COUNTER_VALUE,
+                    "Instagram",
+                    Clock.System.now().toEpochMilliseconds()
+                ),
             )
             predefinedItems.filterValues().forEach(::insertSocialMedias)
             return predefinedItems.filterErrors()

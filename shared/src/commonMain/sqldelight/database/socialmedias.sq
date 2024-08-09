@@ -1,7 +1,8 @@
 CREATE TABLE socialMediaEntity(
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    daysCount INTEGER NOT NULL
+    daysCount INTEGER NOT NULL,
+    lastIncreaseTimestamp INTEGER NOT NULL
 );
 
 getSocialMedias:
@@ -13,9 +14,10 @@ INSERT OR REPLACE
 INTO socialMediaEntity(
     id,
     name,
-    daysCount
+    daysCount,
+    lastIncreaseTimestamp
 )
-VALUES (?, ?, ?);
+VALUES (?, ?, ?, ?);
 
 getSocialMedia:
 SELECT *
