@@ -9,6 +9,7 @@ val AccentViolet = Color(Colors.AccentViolet)
 val LightBlueGrey = Color(Colors.LightBlueGrey)
 val TextBlack = Color(Colors.TextBlack)
 val DarkGrey = Color(Colors.DarkGrey)
+val Grey = Color(Colors.Grey)
 
 val lightColors = lightColors(
     primary = AccentViolet,
@@ -16,7 +17,7 @@ val lightColors = lightColors(
     onPrimary = Color.White,
     onBackground = TextBlack,
     surface = Color.White,
-    onSurface = TextBlack
+    onSurface = TextBlack,
 )
 
 val darkColors = darkColors(
@@ -24,6 +25,6 @@ val darkColors = darkColors(
     background = DarkGrey,
     onPrimary = Color.White,
     onBackground = Color.White,
-    surface = DarkGrey,
+    surface = Grey,
     onSurface = Color.White
 )

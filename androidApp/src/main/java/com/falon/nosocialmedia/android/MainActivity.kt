@@ -58,7 +58,8 @@ fun NoSocialMediasRoot() {
             val state by viewModel.state.collectAsState()
             NoSocialMediasScreen(
                 viewState = state,
-                onSocialMediaClick = {viewModel.onSocialMediaClicked(it) },
+                onSocialMediaClick = viewModel::onSocialMediaClicked,
+                onFabClick = viewModel::onFabClick,
             )
         }
     }

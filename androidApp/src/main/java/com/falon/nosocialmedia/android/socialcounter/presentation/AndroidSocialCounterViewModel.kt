@@ -36,4 +36,8 @@ class AndroidSocialCounterViewModel @Inject constructor(
     fun onSocialMediaClicked(id: Int) {
         viewModel.onSocialMediaClicked(id)
     }
+
+    fun onFabClick() {
+        viewModel.onFabClick()
+    }
 }

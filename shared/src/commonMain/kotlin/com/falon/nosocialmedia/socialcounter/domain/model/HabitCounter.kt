@@ -80,19 +80,15 @@ sealed class HabitCounter(
     }
 }
 
-/**
- * All possible things that can happen in the use-cases
- */
+sealed interface DomainError {
 
-sealed class DomainError {
-
-    object EmptyStringError : DomainError()
-    object DatabaseIsAlreadyPopulated : DomainError()
-    class DatabaseError(throwable: Throwable) : DomainError()
-    object RequireIdToBePositive : DomainError()
-    object RequireNumberOfDaysToBeNotNegative : DomainError()
-    object LocalDateTimeConversionError : DomainError()
-    object WasTodayUpdatedError : DomainError()
+    data object EmptyStringError : DomainError
+    data object DatabaseIsAlreadyPopulated : DomainError
+    class DatabaseError(throwable: Throwable) : DomainError
+    data object RequireIdToBePositive : DomainError
+    data object RequireNumberOfDaysToBeNotNegative : DomainError
+    data object LocalDateTimeConversionError : DomainError
+    data object WasTodayUpdatedError : DomainError
 }
 
 @JvmInline

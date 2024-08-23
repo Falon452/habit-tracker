@@ -71,4 +71,8 @@ class NoSocialMediasViewModel(
             }
 
     }
+
+    fun onFabClick() {
+
+    }
 }

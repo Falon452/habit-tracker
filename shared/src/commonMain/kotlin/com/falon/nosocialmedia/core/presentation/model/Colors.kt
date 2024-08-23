@@ -6,4 +6,5 @@ object Colors {
     const val AccentViolet = 0xFF5643C9
     const val TextBlack = 0xFF111111
     const val DarkGrey = 0xFF282C31
+    const val Grey = 0xFF424242
 }
