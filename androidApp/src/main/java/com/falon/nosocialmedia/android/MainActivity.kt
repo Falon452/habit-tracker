@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -55,11 +53,8 @@ fun NoSocialMediasRoot() {
     ) {
         composable(route = Routes.NO_SOCIAL_MEDIA) {
             val viewModel = hiltViewModel<AndroidSocialCounterViewModel>()
-            val state by viewModel.state.collectAsState()
             NoSocialMediasScreen(
-                viewState = state,
-                onSocialMediaClick = viewModel::onSocialMediaClicked,
-                onFabClick = viewModel::onFabClick,
+                viewModel = viewModel,
             )
         }
     }

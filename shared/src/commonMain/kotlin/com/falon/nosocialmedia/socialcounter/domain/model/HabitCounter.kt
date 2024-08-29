@@ -68,6 +68,7 @@ sealed class HabitCounter(
                     id = id,
                     numberOfDays = numberOfDays.inc(),
                     name = name,
+                    lastIncreaseDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
                 )
             )
         }

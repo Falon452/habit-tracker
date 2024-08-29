@@ -8,5 +8,7 @@ class NoSocialMediasStateFactory {
         NoSocialMediasState(
             noSocialsCounter = listOf(
             ),
+            isBottomDialogVisible = false,
+            bottomDialogText = "",
         )
 }

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Button
@@ -26,41 +25,50 @@ import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import com.falon.nosocialmedia.socialcounter.presentation.model.SocialMediaItem
-import com.falon.nosocialmedia.socialcounter.presentation.viewstate.NoSocialMediasViewState
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun NoSocialMediasScreen(
-    viewState: NoSocialMediasViewState,
-    onSocialMediaClick: (Int) -> Unit,
-    onFabClick: () -> Unit,
+    viewModel: AndroidSocialCounterViewModel,
 ) {
-    var isTextFieldVisible by remember { mutableStateOf(false) }
+    val viewState by viewModel.state.collectAsState()
     val keyboardController = LocalSoftwareKeyboardController.current
-    val scope = rememberCoroutineScope()
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val focusRequester = remember { FocusRequester() }
 
-    Box(modifier = Modifier.fillMaxSize()) { // Box przeniesiony na zewnątrz Scaffold
+    LaunchedEffect(Unit) {
+        lifecycle.repeatOnLifecycle(state = Lifecycle.State.STARTED) {
+            viewModel.effects.collect {
+                viewModel.onEffect(
+                    viewModel.consumeEffect(),
+                    keyboardController,
+                    focusRequester,
+                )
+            }
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
-                        isTextFieldVisible = true
-                        scope.launch {
-                            keyboardController?.show()
-                        }
+                        viewModel.onFabClick()
                     },
                     backgroundColor = MaterialTheme.colors.primary
                 ) {
@@ -78,23 +86,22 @@ fun NoSocialMediasScreen(
                     val item = viewState.items[index]
                     ClickableCard(
                         item = viewState.items[index],
-                        onClick = { onSocialMediaClick(item.id) }
+                        onClick = { viewModel.onSocialMediaClicked(item.id) }
                     )
                 }
             }
         }
 
-        // Dolne pole tekstowe z animacją wysuwania od dołu
         AnimatedVisibility(
-            visible = isTextFieldVisible,
-            enter = slideInVertically(initialOffsetY = { it }), // Wjeżdżanie od dołu
+            visible = viewState.isBottomDialogVisible,
+            enter = slideInVertically(initialOffsetY = { it }),
             exit = slideOutVertically(targetOffsetY = { it }),
-            modifier = Modifier.align(Alignment.BottomCenter) //
+            modifier = Modifier.align(Alignment.BottomCenter)
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .align(Alignment.BottomCenter) // Przypięcie do dolnej krawędzi ekranu
+                    .align(Alignment.BottomCenter)
             ) {
                 Surface(
                     elevation = 8.dp,
@@ -107,19 +114,18 @@ fun NoSocialMediasScreen(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         TextField(
-                            value = "",
-                            onValueChange = {},
-                            modifier =  Modifier
+                            value = viewState.bottomDialogText,
+                            onValueChange = { viewModel.onNewHabitTextChanged(it) },
+                            modifier = Modifier
+                                .focusRequester(focusRequester)
                                 .weight(1f)
                                 .padding(end = 8.dp),
-                            placeholder = { Text("New habit" +
-                                    "") }
+                            placeholder = { Text("New habit") }
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Button(
                             onClick = {
-                                isTextFieldVisible = false
-                                keyboardController?.hide()
+                                viewModel.onNewHabit()
                             },
                         ) {
                             Text("Save")

@@ -14,7 +14,9 @@ class NoSocialMediasViewStateMapper {
                     name = it.name.value,
                     count = it.numberOfDays.toInt(),
                 )
-            }
+            },
+            isBottomDialogVisible = state.isBottomDialogVisible,
+            bottomDialogText = state.bottomDialogText
         )
     }
 }
