@@ -39,7 +39,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
-import com.falon.nosocialmedia.socialcounter.presentation.model.SocialMediaItem
+import com.falon.nosocialmedia.socialcounter.domain.HabitCounter
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -82,10 +82,10 @@ fun NoSocialMediasScreen(
                     .padding(padding)
                     .padding(16.dp)
             ) {
-                items(viewState.items.size) { index ->
-                    val item = viewState.items[index]
+                items(viewState.noSocialsCounter.size) { index ->
+                    val item = viewState.noSocialsCounter[index]
                     ClickableCard(
-                        item = viewState.items[index],
+                        item = viewState.noSocialsCounter[index],
                         onClick = { viewModel.onSocialMediaClicked(item.id) }
                     )
                 }
@@ -138,7 +138,7 @@ fun NoSocialMediasScreen(
 }
 
 @Composable
-fun ClickableCard(item: SocialMediaItem, onClick: () -> Unit) {
+fun ClickableCard(item: HabitCounter, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .padding(8.dp)
@@ -150,14 +150,14 @@ fun ClickableCard(item: SocialMediaItem, onClick: () -> Unit) {
     ) {
         Box {
             Text(
-                text = item.name,
+                text = item.name.value,
                 modifier = Modifier
                     .align(Alignment.CenterStart)
                     .padding(8.dp)
                     .padding(4.dp)
             )
             Text(
-                text = item.count.toString(),
+                text = item.numberOfDays.toString(),
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .padding(8.dp)

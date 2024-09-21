@@ -3,17 +3,11 @@ package com.falon.nosocialmedia.android.di
 import android.content.Context
 import android.content.SharedPreferences
 import com.falon.nosocialmedia.data.NoSocialMediaDatabase
-import com.falon.nosocialmedia.socialcounter.data.local.DatabaseDriverFactory
-import com.falon.nosocialmedia.socialcounter.data.repository.KeyValuePersistentStorage
-import com.falon.nosocialmedia.socialcounter.data.repository.NoSocialMediasRepositoryImpl
-import com.falon.nosocialmedia.socialcounter.data.sources.KeyValuePersistentStorageImpl
-import com.falon.nosocialmedia.socialcounter.domain.interactor.GetSocialMediaByIdUseCase
-import com.falon.nosocialmedia.socialcounter.domain.interactor.IncreaseNoMediaCounterUseCase
-import com.falon.nosocialmedia.socialcounter.domain.interactor.ObserveSocialMediaUseCase
-import com.falon.nosocialmedia.socialcounter.domain.interactor.PopulateDatabaseUseCase
-import com.falon.nosocialmedia.socialcounter.domain.repository.NoSocialMediaRepository
-import com.falon.nosocialmedia.socialcounter.presentation.factory.NoSocialMediasStateFactory
-import com.falon.nosocialmedia.socialcounter.presentation.mapper.NoSocialMediasViewStateMapper
+import com.falon.nosocialmedia.socialcounter.data.DatabaseDriverFactory
+import com.falon.nosocialmedia.socialcounter.data.KeyValuePersistentStorage
+import com.falon.nosocialmedia.socialcounter.data.KeyValuePersistentStorageImpl
+import com.falon.nosocialmedia.socialcounter.data.NoSocialMediasRepository
+import com.falon.nosocialmedia.socialcounter.domain.IncreaseNoMediaCounterUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,45 +32,15 @@ object AppModule {
     @Singleton
     fun provideNoSocialMediasCounterRepository(
         @ApplicationContext context: Context,
-    ): NoSocialMediaRepository =
-        NoSocialMediasRepositoryImpl(
+    ): NoSocialMediasRepository =
+        NoSocialMediasRepository(
             NoSocialMediaDatabase(DatabaseDriverFactory(context).provide()),
         )
 
     @Provides
-    fun provideGetSocialMediaByIdUseCase(
-        noSocialMediaRepository: NoSocialMediaRepository,
-    ): GetSocialMediaByIdUseCase =
-        GetSocialMediaByIdUseCase(noSocialMediaRepository = noSocialMediaRepository)
-
-    @Provides
     fun provideIncreaseNoMediaCounterUseCase(
-        getSocialMediaByIdUseCase: GetSocialMediaByIdUseCase,
-        noSocialMediasCounterRepository: NoSocialMediaRepository,
+        noSocialMediaRepository: NoSocialMediasRepository
     ): IncreaseNoMediaCounterUseCase = IncreaseNoMediaCounterUseCase(
-        getSocialMediaByIdUseCase = getSocialMediaByIdUseCase,
-        noSocialMediaRepository = noSocialMediasCounterRepository,
+        noSocialMediaRepository = noSocialMediaRepository,
     )
-
-    @Provides
-    fun providePopulateDatabaseUseCase(
-        noSocialMediaRepository: NoSocialMediaRepository,
-    ): PopulateDatabaseUseCase =
-        PopulateDatabaseUseCase(noSocialMediaRepository)
-
-    @Provides
-    fun provideNoSocialMediasStateFactory(): NoSocialMediasStateFactory =
-        NoSocialMediasStateFactory()
-
-    @Provides
-    fun provideNoSocialMediasViewStateMapper(): NoSocialMediasViewStateMapper =
-        NoSocialMediasViewStateMapper()
-
-    @Provides
-    fun provideObserveSocialMediaUseCase(
-        repository: NoSocialMediaRepository,
-    ): ObserveSocialMediaUseCase =
-        ObserveSocialMediaUseCase(
-            repository = repository,
-        )
 }

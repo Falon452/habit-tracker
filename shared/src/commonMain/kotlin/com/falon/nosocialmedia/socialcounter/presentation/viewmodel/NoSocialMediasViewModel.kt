@@ -1,12 +1,10 @@
 package com.falon.nosocialmedia.socialcounter.presentation.viewmodel
 
-import com.falon.nosocialmedia.core.domain.flow.toCommonFlow
-import com.falon.nosocialmedia.core.domain.flow.toCommonStateFlow
-import com.falon.nosocialmedia.socialcounter.domain.interactor.IncreaseNoMediaCounterUseCase
-import com.falon.nosocialmedia.socialcounter.domain.interactor.ObserveSocialMediaUseCase
-import com.falon.nosocialmedia.socialcounter.domain.interactor.PopulateDatabaseUseCase
-import com.falon.nosocialmedia.socialcounter.presentation.factory.NoSocialMediasStateFactory
-import com.falon.nosocialmedia.socialcounter.presentation.mapper.NoSocialMediasViewStateMapper
+import com.falon.nosocialmedia.utils.toCommonFlow
+import com.falon.nosocialmedia.utils.toCommonStateFlow
+import com.falon.nosocialmedia.socialcounter.data.NoSocialMediasRepository
+import com.falon.nosocialmedia.socialcounter.domain.HabitCounter
+import com.falon.nosocialmedia.socialcounter.domain.IncreaseNoMediaCounterUseCase
 import com.falon.nosocialmedia.socialcounter.presentation.model.HabitsEffect
 import com.falon.nosocialmedia.socialcounter.presentation.model.KeyboardController
 import com.github.michaelbull.result.filterErrors
@@ -23,30 +21,31 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+data class NoSocialMediasState(
+    val noSocialsCounter: List<HabitCounter> = listOf(),
+    val isBottomDialogVisible: Boolean = false,
+    val bottomDialogText: String = "",
+)
+
 class NoSocialMediasViewModel(
-    viewStateFactory: NoSocialMediasStateFactory,
     coroutineScope: CoroutineScope?,
-    private val viewStateMapper: NoSocialMediasViewStateMapper,
     private val increaseNoMediaCounterUseCase: IncreaseNoMediaCounterUseCase,
-    populateDatabaseUseCase: PopulateDatabaseUseCase,
-    observeSocialMediasUseCase: ObserveSocialMediaUseCase,
+    repository: NoSocialMediasRepository,
 ) {
 
     private val viewModelScope = coroutineScope ?: CoroutineScope(Dispatchers.Main + SupervisorJob())
 
-    private val _state = MutableStateFlow(viewStateFactory.create())
+    private val _state = MutableStateFlow(NoSocialMediasState())
     val viewState = _state
-        .map { state -> viewStateMapper.from(state) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = viewStateMapper.from(_state.value)
+            initialValue = _state.value
         )
         .toCommonStateFlow()
 
@@ -54,10 +53,10 @@ class NoSocialMediasViewModel(
     val effects = _effects.filter { it.isNotEmpty() }.toCommonFlow()
 
     init {
-        populateDatabaseUseCase.execute().forEach {
+        repository.initializeDatabase().forEach {
             println("Error $it")
         }
-        observeSocialMediasUseCase.execute()
+        repository.observeSocialMedias()
             .onEach { socialMedias ->
                 _state.value = _state.value.copy(noSocialsCounter = socialMedias.filterValues())
 
@@ -71,11 +70,10 @@ class NoSocialMediasViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun onSocialMediaClicked(id: Int) {
+    fun onSocialMediaClicked(id: UInt) {
         increaseNoMediaCounterUseCase.execute(id)
             .onSuccess {
                 println("SHOW TOAST TODO")
-                // show toast
             }
             .onFailure {
                 println("FAILURE $it")
@@ -96,9 +94,9 @@ class NoSocialMediasViewModel(
     fun onNewHabit() {
         _state.value = _state.value.copy(
             bottomDialogText = "",
-            isBottomDialogVisible = false, // can be skipped
+            isBottomDialogVisible = false,
         )
-        _effects.sendEffect(HabitsEffect.HideKeyboard) // can be skipped
+        _effects.sendEffect(HabitsEffect.HideKeyboard)
     }
 
     fun onNewHabitTextChanged(text: String) {
@@ -115,7 +113,6 @@ class NoSocialMediasViewModel(
             HabitsEffect.RequestFocusOnNewHabit -> keyboardWithFocusOnNewHabit.show()
             HabitsEffect.HideKeyboard -> keyboardWithFocusOnNewHabit.hide()
         }
-
     }
 
     private fun <T> MutableStateFlow<List<T>>.sendEffect(effect: T) {
