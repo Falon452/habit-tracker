@@ -26,7 +26,7 @@ class NoSocialMediasRepository(
 
     private val queries = db.socialmediasQueries
 
-    fun observeSocialMedias(): CommonFlow<List<Result<HabitCounter, DomainError>>> {
+    fun observeSocialMedias(): CommonFlow<List<Result<HabitCounter.HabitCounterDataClass, DomainError>>> {
         return queries.getSocialMedias().asFlow().mapToList().map { socialMediaEntities ->
             socialMediaEntities.map {
                 HabitCounter.of(
@@ -39,9 +39,20 @@ class NoSocialMediasRepository(
         }.toCommonFlow()
     }
 
-    fun insertSocialMedias(habitCounter: HabitCounter): Result<Unit, DomainError.DatabaseError> {
+    fun insertSocialMedias(habitCounter: HabitCounter.HabitCounterDataClassFirstCreation): Result<Unit, DomainError.DatabaseError> {
         return runCatching {
             queries.insertSocialMediaEntity(
+                habitCounter.name.value,
+                habitCounter.numberOfDays.toLong(),
+                habitCounter.lastIncreaseDateTime.toInstant(TimeZone.currentSystemDefault())
+                    .toEpochMilliseconds(),
+            )
+        }.mapError { DomainError.DatabaseError(it) }
+    }
+
+    fun replaceSocialMedias(habitCounter: HabitCounter.HabitCounterDataClass): Result<Unit, DomainError.DatabaseError> {
+        return runCatching {
+            queries.replaceSocialMediaEntity(
                 habitCounter.id.toLong(),
                 habitCounter.name.value,
                 habitCounter.numberOfDays.toLong(),
@@ -51,7 +62,8 @@ class NoSocialMediasRepository(
         }.mapError { DomainError.DatabaseError(it) }
     }
 
-    fun getSocialMedia(id: UInt): Result<HabitCounter, DomainError> {
+
+    fun getSocialMedia(id: UInt): Result<HabitCounter.HabitCounterDataClass, DomainError> {
         return runCatching { queries.getSocialMedia(id.toLong()).executeAsOne() }
             .flatMapEither(
                 failure = { Err(DomainError.DatabaseError(it)) },
@@ -71,16 +83,7 @@ class NoSocialMediasRepository(
         if (existingItems.isEmpty()) {
             val predefinedItems = listOf(
                 HabitCounter.of(
-                    1,
-                    INITIAL_COUNTER_VALUE,
                     "Instagram",
-                    Clock.System.now().toEpochMilliseconds()
-                ),
-                HabitCounter.of(
-                    2,
-                    INITIAL_COUNTER_VALUE,
-                    "Instagram",
-                    Clock.System.now().toEpochMilliseconds()
                 ),
             )
             predefinedItems.filterValues().forEach(::insertSocialMedias)

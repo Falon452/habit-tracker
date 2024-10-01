@@ -15,13 +15,13 @@ class IncreaseNoMediaCounterUseCase(
             return socialMediaResult.asErr()
         }
 
-        val newSocialMedia: HabitCounter = socialMediaResult.value
+        val newSocialMedia = socialMediaResult.value
         val increasedCounter = newSocialMedia.getIncreasedCounter()
 
         if (increasedCounter.isErr) {
             return increasedCounter.asErr()
         }
 
-        return noSocialMediaRepository.insertSocialMedias(increasedCounter.value)
+        return noSocialMediaRepository.replaceSocialMedias(increasedCounter.value)
     }
 }

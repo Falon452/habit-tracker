@@ -82,10 +82,10 @@ fun NoSocialMediasScreen(
                     .padding(padding)
                     .padding(16.dp)
             ) {
-                items(viewState.noSocialsCounter.size) { index ->
-                    val item = viewState.noSocialsCounter[index]
+                items(viewState.habitCounters.size) { index ->
+                    val item = viewState.habitCounters[index]
                     ClickableCard(
-                        item = viewState.noSocialsCounter[index],
+                        item = viewState.habitCounters[index],
                         onClick = { viewModel.onSocialMediaClicked(item.id) }
                     )
                 }

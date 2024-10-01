@@ -12,25 +12,31 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.jvm.JvmInline
 
 sealed class HabitCounter(
-    open val id: UInt,
+    open val id: UInt?,
     open val numberOfDays: UInt,
     open val name: NotEmptyString,
     open val lastIncreaseDateTime: LocalDateTime,
 ) {
 
-    private data class HabitCounterDataClass(
+    data class HabitCounterDataClass(
         override val id: UInt,
         override val numberOfDays: UInt,
         override val name: NotEmptyString,
         override val lastIncreaseDateTime: LocalDateTime,
     ) : HabitCounter(id, numberOfDays, name, lastIncreaseDateTime)
 
+    data class HabitCounterDataClassFirstCreation(
+        override val numberOfDays: UInt,
+        override val name: NotEmptyString,
+        override val lastIncreaseDateTime: LocalDateTime,
+    ) : HabitCounter(null, numberOfDays, name, lastIncreaseDateTime)
+
 
     companion object {
 
         const val INITIAL_COUNTER_VALUE = 0
 
-        fun of(id: Int, numberOfDays: Int, name: String, lastIncreaseTimestamp: Long): Result<HabitCounter, DomainError> {
+        fun of(id: Int, numberOfDays: Int, name: String, lastIncreaseTimestamp: Long): Result<HabitCounterDataClass, DomainError> {
             val notEmptyNameResult = name.notEmptyStringOf()
             val dateTime: LocalDateTime
 
@@ -59,7 +65,7 @@ sealed class HabitCounter(
             )
         }
 
-        fun HabitCounter.getIncreasedCounter(): Result<HabitCounter, DomainError.WasTodayUpdatedError> {
+        fun HabitCounterDataClass.getIncreasedCounter(): Result<HabitCounterDataClass, DomainError.WasTodayUpdatedError> {
             if (wasTodayIncreased()) {
                 return Err(DomainError.WasTodayUpdatedError)
             }
@@ -77,6 +83,30 @@ sealed class HabitCounter(
             val nowLocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
             return lastIncreaseDateTime.date == nowLocalDateTime.date &&
                     numberOfDays != INITIAL_COUNTER_VALUE.toUInt()
+        }
+
+        fun of(bottomDialogText: String): Result<HabitCounterDataClassFirstCreation, DomainError> {
+            val notEmptyNameResult = bottomDialogText.notEmptyStringOf()
+            val dateTime: LocalDateTime
+
+            if (notEmptyNameResult.isErr) {
+                return Err(DomainError.EmptyStringError)
+            }
+            try {
+                val lastIncreaseTimestamp = Clock.System.now().toEpochMilliseconds()
+                dateTime = Instant.fromEpochMilliseconds(lastIncreaseTimestamp).toLocalDateTime(TimeZone.currentSystemDefault())
+            } catch (e: IllegalArgumentException) {
+                return Err(DomainError.LocalDateTimeConversionError)
+            }
+
+            return Ok(
+                HabitCounterDataClassFirstCreation(
+                    numberOfDays = INITIAL_COUNTER_VALUE.toUInt(),
+                    name = notEmptyNameResult.value,
+                    lastIncreaseDateTime = dateTime,
+                )
+            )
+
         }
     }
 }

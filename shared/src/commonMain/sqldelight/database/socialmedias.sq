@@ -10,14 +10,22 @@ SELECT *
 FROM socialMediaEntity;
 
 insertSocialMediaEntity:
-INSERT OR REPLACE
-INTO socialMediaEntity(
+INSERT OR REPLACE INTO socialMediaEntity(
+    name,
+    daysCount,
+    lastIncreaseTimestamp
+)
+VALUES (?, ?, ?);
+
+replaceSocialMediaEntity:
+INSERT OR REPLACE INTO socialMediaEntity(
     id,
     name,
     daysCount,
     lastIncreaseTimestamp
 )
 VALUES (?, ?, ?, ?);
+
 
 getSocialMedia:
 SELECT *

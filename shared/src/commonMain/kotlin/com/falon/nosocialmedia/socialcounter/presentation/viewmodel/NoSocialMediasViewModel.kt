@@ -9,6 +9,7 @@ import com.falon.nosocialmedia.socialcounter.presentation.model.HabitsEffect
 import com.falon.nosocialmedia.socialcounter.presentation.model.KeyboardController
 import com.github.michaelbull.result.filterErrors
 import com.github.michaelbull.result.filterValues
+import com.github.michaelbull.result.fold
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import kotlinx.coroutines.CoroutineScope
@@ -27,7 +28,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class NoSocialMediasState(
-    val noSocialsCounter: List<HabitCounter> = listOf(),
+    val habitCounters: List<HabitCounter.HabitCounterDataClass> = listOf(),
     val isBottomDialogVisible: Boolean = false,
     val bottomDialogText: String = "",
 )
@@ -35,7 +36,7 @@ data class NoSocialMediasState(
 class NoSocialMediasViewModel(
     coroutineScope: CoroutineScope?,
     private val increaseNoMediaCounterUseCase: IncreaseNoMediaCounterUseCase,
-    repository: NoSocialMediasRepository,
+    private val repository: NoSocialMediasRepository,
 ) {
 
     private val viewModelScope = coroutineScope ?: CoroutineScope(Dispatchers.Main + SupervisorJob())
@@ -58,7 +59,7 @@ class NoSocialMediasViewModel(
         }
         repository.observeSocialMedias()
             .onEach { socialMedias ->
-                _state.value = _state.value.copy(noSocialsCounter = socialMedias.filterValues())
+                _state.value = _state.value.copy(habitCounters = socialMedias.filterValues())
 
                 socialMedias.filterErrors().onEach {
                     println("Got error $it")
@@ -92,6 +93,14 @@ class NoSocialMediasViewModel(
     }
 
     fun onNewHabit() {
+        HabitCounter.of(_state.value.bottomDialogText).fold(
+            success = {
+                repository.insertSocialMedias(it)
+            },
+            failure = {
+                println(it)
+            }
+        )
         _state.value = _state.value.copy(
             bottomDialogText = "",
             isBottomDialogVisible = false,
