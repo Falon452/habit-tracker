@@ -1,4 +1,4 @@
-package com.falon.habit.android.di
+package com.falon.habit.di
 
 import android.content.Context
 import android.content.SharedPreferences

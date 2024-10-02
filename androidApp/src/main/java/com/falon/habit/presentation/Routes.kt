@@ -1,4 +1,4 @@
-package com.falon.habit.android.presentation
+package com.falon.habit.presentation
 
 object Routes {
 

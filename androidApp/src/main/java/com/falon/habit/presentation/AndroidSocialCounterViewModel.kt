@@ -1,4 +1,4 @@
-package com.falon.habit.android.presentation
+package com.falon.habit.presentation
 
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.focus.FocusRequester

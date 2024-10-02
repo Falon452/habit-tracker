@@ -1,4 +1,4 @@
-package com.falon.habit.android.presentation
+package com.falon.habit.presentation
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically

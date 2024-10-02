@@ -12,6 +12,14 @@ object Deps {
     const val composeMaterial = "androidx.compose.material:material:$composeVersion"
     const val composeIconsExtended = "androidx.compose.material:material-icons-extended:$composeVersion"
 
+    const val firebaseBomVersion = "33.3.0"
+    const val firebaseBom = "com.google.firebase:firebase-bom:$firebaseBomVersion"
+    const val firebaseUiAuthVersion = "7.2.0"
+    const val firebaseAuth = "com.google.firebase:firebase-auth"
+    const val firebaseUiAuth = "com.firebaseui:firebase-ui-auth:$firebaseUiAuthVersion"
+    const val googleServicesVersion = "4.4.2"
+    const val googleServices = "com.google.gms:google-services:$googleServicesVersion"
+
     private const val composeNavigationVersion = "2.5.3"
     const val composeNavigation = "androidx.navigation:navigation-compose:$composeNavigationVersion"
 
