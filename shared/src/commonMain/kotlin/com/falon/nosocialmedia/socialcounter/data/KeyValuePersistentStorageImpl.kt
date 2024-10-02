@@ -1,3 +1,0 @@
-package com.falon.nosocialmedia.socialcounter.data
-
-expect class KeyValuePersistentStorageImpl : KeyValuePersistentStorage

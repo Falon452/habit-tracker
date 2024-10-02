@@ -90,8 +90,8 @@ android {
 }
 
 sqldelight {
-    database("NoSocialMediaDatabase") {
-        packageName = "com.falon.nosocialmedia.data"
+    database("HabitDatabase") {
+        packageName = "com.falon.habit.data"
         sourceFolders = listOf("sqldelight")
     }
 }

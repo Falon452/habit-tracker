@@ -14,6 +14,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "nosocialmedia"
+rootProject.name = "habit"
 include(":androidApp")
 include(":shared")

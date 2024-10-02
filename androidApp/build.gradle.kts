@@ -7,10 +7,10 @@ plugins {
 }
 
 android {
-    namespace = "com.falon.nosocialmedia.android"
+    namespace = "com.falon.habit.android"
     compileSdk = 34
     defaultConfig {
-        applicationId = "com.falon.nosocialmedia.android"
+        applicationId = "com.falon.habit.android"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
