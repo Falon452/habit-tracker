@@ -4,13 +4,14 @@ plugins {
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
     kotlin("plugin.serialization") version Deps.kotlinVersion
+    id("com.google.gms.google-services")
 }
 
 android {
-    namespace = "com.falon.habit.android"
+    namespace = "com.falon.habit"
     compileSdk = 34
     defaultConfig {
-        applicationId = "com.falon.habit.android"
+        applicationId = "com.falon.habit"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -52,6 +53,9 @@ dependencies {
     implementation(Deps.composeIconsExtended)
     implementation(Deps.composeNavigation)
     implementation(Deps.coilCompose)
+    implementation(platform(Deps.firebaseBom))
+    implementation(Deps.firebaseAuth)
+    implementation(Deps.firebaseUiAuth)
 
     implementation(Deps.hiltAndroid)
     kapt(Deps.hiltAndroidCompiler)

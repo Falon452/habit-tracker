@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "37856393440",
+    "project_id": "habit-8a652",
+    "storage_bucket": "habit-8a652.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:37856393440:android:8988faa110916124fef885",
+        "android_client_info": {
+          "package_name": "com.falon.habit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDtU4btd57ZDqUd5lQFiE52Y0ouDljJHM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

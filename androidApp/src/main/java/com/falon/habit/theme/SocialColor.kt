@@ -1,4 +1,4 @@
-package com.falon.habit.android.core.theme
+package com.falon.habit.theme
 
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
