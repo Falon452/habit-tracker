@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 
-class NoSocialMediasRepository(
+class HabitsRepository(
     db: HabitDatabase,
 ) {
 

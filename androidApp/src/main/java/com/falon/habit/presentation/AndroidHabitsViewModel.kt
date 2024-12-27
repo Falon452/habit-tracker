@@ -5,31 +5,31 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.falon.habit.data.NoSocialMediasRepository
+import com.falon.habit.data.HabitsRepository
 import com.falon.habit.domain.IncreaseNoMediaCounterUseCase
 import com.falon.habit.presentation.model.HabitsEffect
 import com.falon.habit.presentation.model.KeyboardController
-import com.falon.habit.presentation.viewmodel.NoSocialMediasState
-import com.falon.habit.presentation.viewmodel.NoSocialMediasViewModel
+import com.falon.habit.presentation.viewmodel.HabitsState
+import com.falon.habit.presentation.viewmodel.HabitsViewModel
 import com.falon.habit.utils.CommonStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class AndroidSocialCounterViewModel @Inject constructor(
+class AndroidHabitsViewModel @Inject constructor(
     increaseNoMediaCounterUseCase: IncreaseNoMediaCounterUseCase,
-    repository: NoSocialMediasRepository,
+    repository: HabitsRepository,
 ) : ViewModel() {
 
     private val viewModel by lazy {
-        NoSocialMediasViewModel(
+        HabitsViewModel(
             coroutineScope = viewModelScope,
             increaseNoMediaCounterUseCase = increaseNoMediaCounterUseCase,
             repository = repository,
         )
     }
 
-    val state: CommonStateFlow<NoSocialMediasState> = viewModel.viewState
+    val state: CommonStateFlow<HabitsState> = viewModel.viewState
     val effects = viewModel.effects
 
     fun onSocialMediaClicked(id: UInt) {

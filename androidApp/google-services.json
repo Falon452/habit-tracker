@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "37856393440",
     "project_id": "habit-8a652",
-    "storage_bucket": "habit-8a652.appspot.com"
+    "storage_bucket": "habit-8a652.firebasestorage.app"
   },
   "client": [
     {
@@ -12,7 +12,12 @@
           "package_name": "com.falon.habit"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "37856393440-0t47g15rls04i1kfdvq3jshhfjpl9cq2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBDtU4btd57ZDqUd5lQFiE52Y0ouDljJHM"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "37856393440-0t47g15rls04i1kfdvq3jshhfjpl9cq2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -3,10 +3,10 @@ package com.falon.habit.domain
 import com.falon.habit.domain.HabitCounter.Companion.getIncreasedCounter
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.asErr
-import com.falon.habit.data.NoSocialMediasRepository
+import com.falon.habit.data.HabitsRepository
 
 class IncreaseNoMediaCounterUseCase(
-    private val noSocialMediaRepository: NoSocialMediasRepository,
+    private val noSocialMediaRepository: HabitsRepository,
 ) {
 
     fun execute(id: UInt) : Result<Unit, DomainError> {

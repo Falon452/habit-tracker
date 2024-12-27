@@ -2,7 +2,7 @@ package com.falon.habit.presentation.viewmodel
 
 import com.falon.habit.utils.toCommonFlow
 import com.falon.habit.utils.toCommonStateFlow
-import com.falon.habit.data.NoSocialMediasRepository
+import com.falon.habit.data.HabitsRepository
 import com.falon.habit.domain.HabitCounter
 import com.falon.habit.domain.IncreaseNoMediaCounterUseCase
 import com.falon.habit.presentation.model.HabitsEffect
@@ -27,21 +27,21 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-data class NoSocialMediasState(
+data class HabitsState(
     val habitCounters: List<HabitCounter.HabitCounterDataClass> = listOf(),
     val isBottomDialogVisible: Boolean = false,
     val bottomDialogText: String = "",
 )
 
-class NoSocialMediasViewModel(
+class HabitsViewModel(
     coroutineScope: CoroutineScope?,
     private val increaseNoMediaCounterUseCase: IncreaseNoMediaCounterUseCase,
-    private val repository: NoSocialMediasRepository,
+    private val repository: HabitsRepository,
 ) {
 
     private val viewModelScope = coroutineScope ?: CoroutineScope(Dispatchers.Main + SupervisorJob())
 
-    private val _state = MutableStateFlow(NoSocialMediasState())
+    private val _state = MutableStateFlow(HabitsState())
     val viewState = _state
         .stateIn(
             scope = viewModelScope,

@@ -6,7 +6,7 @@ import com.falon.habit.data.HabitDatabase
 import com.falon.habit.data.DatabaseDriverFactory
 import com.falon.habit.data.KeyValuePersistentStorage
 import com.falon.habit.data.KeyValuePersistentStorageImpl
-import com.falon.habit.data.NoSocialMediasRepository
+import com.falon.habit.data.HabitsRepository
 import com.falon.habit.domain.IncreaseNoMediaCounterUseCase
 import dagger.Module
 import dagger.Provides
@@ -30,16 +30,16 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideNoSocialMediasCounterRepository(
+    fun provideHabitsCounterRepository(
         @ApplicationContext context: Context,
-    ): NoSocialMediasRepository =
-        NoSocialMediasRepository(
+    ): HabitsRepository =
+        HabitsRepository(
             HabitDatabase(DatabaseDriverFactory(context).provide()),
         )
 
     @Provides
     fun provideIncreaseNoMediaCounterUseCase(
-        noSocialMediaRepository: NoSocialMediasRepository
+        noSocialMediaRepository: HabitsRepository
     ): IncreaseNoMediaCounterUseCase = IncreaseNoMediaCounterUseCase(
         noSocialMediaRepository = noSocialMediaRepository,
     )
