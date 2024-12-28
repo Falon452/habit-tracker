@@ -1,4 +1,4 @@
-package com.falon.habit.presentation
+package com.falon.habit.presentation.habit.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
@@ -36,15 +36,17 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.falon.habit.domain.HabitCounter
 import com.falon.habit.domain.HabitCounter.HabitCounterDataClass
+import com.falon.habit.presentation.habit.viewmodel.AndroidHabitsViewModel
 
 
 @Composable
 fun HabitsScreen(
-    viewModel: AndroidHabitsViewModel,
+    viewModel: AndroidHabitsViewModel = hiltViewModel(),
 ) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val viewState by produceState(
@@ -78,7 +80,7 @@ fun HabitsScreen(
             viewModel::onNewHabitTextChanged,
             viewModel::onNewHabit,
             focusRequester,
-            Modifier.Companion
+            Modifier
                 .align(Alignment.BottomCenter)
                 .background(MaterialTheme.colors.background),
         )

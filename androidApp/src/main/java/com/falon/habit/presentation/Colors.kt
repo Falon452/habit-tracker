@@ -1,9 +1,8 @@
-package com.falon.habit.theme
+package com.falon.habit.presentation
 
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.ui.graphics.Color
-import com.falon.habit.presentation.Colors
 
 val AccentViolet = Color(Colors.AccentViolet)
 val LightBlueGrey = Color(Colors.LightBlueGrey)
