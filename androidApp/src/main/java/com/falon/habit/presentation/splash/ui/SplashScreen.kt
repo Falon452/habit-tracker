@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -22,6 +23,7 @@ import com.falon.habit.R
 import com.falon.habit.presentation.Routes
 import com.falon.habit.presentation.splash.router.SplashRouter
 import com.falon.habit.presentation.splash.viewmodel.AndroidSplashViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun SplashScreen(
@@ -37,26 +39,34 @@ fun SplashScreen(
             navController.navigate(Routes.HABITS_SCREEN)
         }
     }
-    LaunchedEffect(Unit) {
-        alpha.animateTo(
-            1f,
-            animationSpec = tween(1500),
-        )
-    }
-    LaunchedEffect(Unit) {
-        scale.animateTo(
-            1f,
-            animationSpec = tween(1500),
-        )
-        viewModel.onInit()
-    }
 
     val lifecycleOwner = LocalLifecycleOwner.current
+    val scope = rememberCoroutineScope()
+
     LaunchedEffect(lifecycleOwner.lifecycle) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.effects.collect {
                 viewModel.consumeEffect()?.let {
-                    viewModel.onEffect(it, router)
+                    viewModel.onEffect(
+                        it,
+                        router,
+                        { durationMillis ->
+                            scope.launch {
+                                alpha.animateTo(
+                                    1f,
+                                    animationSpec = tween(durationMillis.toInt()),
+                                )
+                            }
+                        },
+                        { durationMillis ->
+                            scope.launch {
+                                scale.animateTo(
+                                    1f,
+                                    animationSpec = tween(durationMillis.toInt()),
+                                )
+                            }
+                        },
+                    )
                 }
             }
         }
@@ -69,7 +79,9 @@ fun SplashScreen(
         Image(
             painter = painterResource(id = R.drawable.unicorn),
             contentDescription = "Unicorn",
-            modifier = Modifier.scale(scale.value).alpha(alpha.value)
+            modifier = Modifier
+                .scale(scale.value)
+                .alpha(alpha.value)
         )
     }
 }
