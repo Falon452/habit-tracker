@@ -39,6 +39,9 @@ fun SplashScreen(
             navController.navigate(Routes.HABITS_SCREEN)
         }
     }
+    LaunchedEffect(Unit) {
+        viewModel.onViewCreated()
+    }
 
     val lifecycleOwner = LocalLifecycleOwner.current
     val scope = rememberCoroutineScope()

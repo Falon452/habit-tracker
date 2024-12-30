@@ -18,13 +18,13 @@ class AndroidSplashViewModel : ViewModel() {
     private val _effects: MutableStateFlow<List<SplashEffect>> = MutableStateFlow(emptyList())
     val effects = _effects.asStateFlow()
 
-    init {
+    fun onViewCreated() {
         viewModelScope.launch {
             _effects.sendEffect(
                 AlphaImage(ANIMATION_DURATION_MILLIS),
                 ScaleImage(ANIMATION_DURATION_MILLIS),
             )
-            delay(ANIMATION_DURATION_MILLIS)
+            delay(SPLASH_DURATION_MILLIS)
             _effects.sendEffect(SplashEffect.SignIn)
         }
     }
@@ -51,5 +51,6 @@ class AndroidSplashViewModel : ViewModel() {
     private companion object {
 
         const val ANIMATION_DURATION_MILLIS = 2000L
+        const val SPLASH_DURATION_MILLIS = 2200L
     }
 }
