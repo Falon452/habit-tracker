@@ -31,7 +31,7 @@ class AndroidSplashViewModel : ViewModel() {
         )
         if (result.resultCode == RESULT_OK) {
             val user = FirebaseAuth.getInstance().currentUser
-            _effects.sendEffect(SplashEffect.RouteToMain)
+            _effects.sendEffect(SplashEffect.RouteToHabits)
         } else {
             _effects.sendEffect(SplashEffect.SignIn)
         }
@@ -47,7 +47,7 @@ class AndroidSplashViewModel : ViewModel() {
             if (FirebaseAuth.getInstance().currentUser == null) {
                 _effects.sendEffect(SplashEffect.SignIn)
             } else {
-                _effects.sendEffect(SplashEffect.RouteToMain)
+                _effects.sendEffect(SplashEffect.RouteToHabits)
             }
         }
     }
@@ -62,7 +62,7 @@ class AndroidSplashViewModel : ViewModel() {
             SplashEffect.SignIn -> router.routeToSignIn()
             is AlphaImage -> alphaImage(effect.millis)
             is ScaleImage -> scaleImage(effect.millis)
-            SplashEffect.RouteToMain -> router.routeToHabitsScreen()
+            SplashEffect.RouteToHabits -> router.routeToHabitsScreen()
         }
     }
 
