@@ -27,12 +27,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-
-//                    if (FirebaseAuth.getInstance().currentUser == null) {
-//                        startSignInFlow()  // Launch Firebase UI sign-in flow if the user is not authenticated
-//                    } else {
-                    HabitsRoot()  // Proceed with your app's main functionality
-//                    }
+                    HabitsRoot()
                 }
             }
         }

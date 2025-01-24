@@ -1,6 +1,7 @@
 package com.falon.habit.presentation.splash.router
 
-fun interface SplashRouter {
+interface SplashRouter {
 
     fun routeToSignIn()
+    fun routeToHabitsScreen()
 }

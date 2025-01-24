@@ -1,11 +1,16 @@
 package com.falon.habit.presentation.splash.viewmodel
 
+import android.app.Activity.RESULT_OK
+import android.util.Log
+import androidx.activity.result.ActivityResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.falon.habit.presentation.splash.effect.SplashEffect
 import com.falon.habit.presentation.splash.effect.SplashEffect.AlphaImage
 import com.falon.habit.presentation.splash.effect.SplashEffect.ScaleImage
-import com.falon.habit.presentation.splash.router.SplashRouter
+import com.falon.habit.presentation.splash.router.AndroidSplashRouter
+import com.firebase.ui.auth.IdpResponse
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,6 +23,20 @@ class AndroidSplashViewModel : ViewModel() {
     private val _effects: MutableStateFlow<List<SplashEffect>> = MutableStateFlow(emptyList())
     val effects = _effects.asStateFlow()
 
+    fun onSignInResult(result: ActivityResult) {
+        val response = IdpResponse.fromResultIntent(result.data)
+        Log.i(
+            TAG,
+            "onSignInResult response: $response, result: $result, Current user: ${FirebaseAuth.getInstance().currentUser}"
+        )
+        if (result.resultCode == RESULT_OK) {
+            val user = FirebaseAuth.getInstance().currentUser
+            _effects.sendEffect(SplashEffect.RouteToMain)
+        } else {
+            _effects.sendEffect(SplashEffect.SignIn)
+        }
+    }
+
     fun onViewCreated() {
         viewModelScope.launch {
             _effects.sendEffect(
@@ -25,13 +44,17 @@ class AndroidSplashViewModel : ViewModel() {
                 ScaleImage(ANIMATION_DURATION_MILLIS),
             )
             delay(SPLASH_DURATION_MILLIS)
-            _effects.sendEffect(SplashEffect.SignIn)
+            if (FirebaseAuth.getInstance().currentUser == null) {
+                _effects.sendEffect(SplashEffect.SignIn)
+            } else {
+                _effects.sendEffect(SplashEffect.RouteToMain)
+            }
         }
     }
 
     fun onEffect(
         effect: SplashEffect,
-        router: SplashRouter,
+        router: AndroidSplashRouter,
         alphaImage: (Long) -> Unit,
         scaleImage: (Long) -> Unit,
     ) {
@@ -39,6 +62,7 @@ class AndroidSplashViewModel : ViewModel() {
             SplashEffect.SignIn -> router.routeToSignIn()
             is AlphaImage -> alphaImage(effect.millis)
             is ScaleImage -> scaleImage(effect.millis)
+            SplashEffect.RouteToMain -> router.routeToHabitsScreen()
         }
     }
 
@@ -50,6 +74,7 @@ class AndroidSplashViewModel : ViewModel() {
 
     private companion object {
 
+        const val TAG = "AndroidSplashViewModel"
         const val ANIMATION_DURATION_MILLIS = 2000L
         const val SPLASH_DURATION_MILLIS = 2200L
     }

@@ -1,5 +1,7 @@
 package com.falon.habit.presentation.splash.ui
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -20,8 +22,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import com.falon.habit.R
-import com.falon.habit.presentation.Routes
-import com.falon.habit.presentation.splash.router.SplashRouter
+import com.falon.habit.presentation.splash.router.AndroidSplashRouter
 import com.falon.habit.presentation.splash.viewmodel.AndroidSplashViewModel
 import kotlinx.coroutines.launch
 
@@ -30,21 +31,26 @@ fun SplashScreen(
     navController: NavController,
     viewModel: AndroidSplashViewModel = hiltViewModel(),
 ) {
-    val alpha = remember {
-        Animatable(0f)
-    }
+    val alpha = remember { Animatable(0f) }
     val scale = remember { Animatable(0.8f) }
-    val router = remember {
-        SplashRouter {
-            navController.navigate(Routes.HABITS_SCREEN)
+    val signInLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
+            viewModel.onSignInResult(result)
         }
+    val router = remember {
+        AndroidSplashRouter(
+            navController,
+            signInLauncher,
+        )
     }
+
     LaunchedEffect(Unit) {
         viewModel.onViewCreated()
     }
 
     val lifecycleOwner = LocalLifecycleOwner.current
     val scope = rememberCoroutineScope()
+
 
     LaunchedEffect(lifecycleOwner.lifecycle) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
