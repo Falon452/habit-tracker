@@ -6,7 +6,8 @@ import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.falon.habit.data.HabitsRepository
-import com.falon.habit.domain.IncreaseNoMediaCounterUseCase
+import com.falon.habit.domain.usecase.IncreaseNoMediaCounterUseCase
+import com.falon.habit.domain.usecase.ShareHabitWithUseCase
 import com.falon.habit.presentation.model.HabitsEffect
 import com.falon.habit.presentation.model.KeyboardController
 import com.falon.habit.presentation.viewmodel.HabitsState
@@ -18,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AndroidHabitsViewModel @Inject constructor(
     increaseNoMediaCounterUseCase: IncreaseNoMediaCounterUseCase,
+    shareHabitWithUseCase: ShareHabitWithUseCase,
     repository: HabitsRepository,
 ) : ViewModel() {
 
@@ -25,6 +27,7 @@ class AndroidHabitsViewModel @Inject constructor(
         HabitsViewModel(
             coroutineScope = viewModelScope,
             increaseNoMediaCounterUseCase = increaseNoMediaCounterUseCase,
+            shareHabitWithUseCase = shareHabitWithUseCase,
             repository = repository,
         )
     }
@@ -32,7 +35,7 @@ class AndroidHabitsViewModel @Inject constructor(
     val state: CommonStateFlow<HabitsState> = viewModel.viewState
     val effects = viewModel.effects
 
-    fun onSocialMediaClicked(id: UInt) {
+    fun onHabitClicked(id: String) {
         viewModel.onSocialMediaClicked(id)
     }
 
@@ -56,7 +59,8 @@ class AndroidHabitsViewModel @Inject constructor(
     fun onEffect(
         effect: HabitsEffect,
         keyboardController: SoftwareKeyboardController?,
-        focusRequester: FocusRequester
+        focusRequester: FocusRequester,
+        showToast: (String) -> Unit,
     ) {
         val commonKeyboardController = object : KeyboardController {
             override fun show() {
@@ -68,6 +72,18 @@ class AndroidHabitsViewModel @Inject constructor(
             }
 
         }
-        viewModel.onEffect(effect, commonKeyboardController)
+        viewModel.onEffect(effect, commonKeyboardController, showToast)
+    }
+
+    fun onShareHabitWith(email: String) {
+        viewModel.onShareHabitWith(email)
+    }
+
+    fun onHabitLongClicked(habitId: String) {
+        viewModel.onHabitLongClicked(habitId)
+    }
+
+    fun onShareHabitDialogDismiss() {
+        viewModel.onShareHabitDialogDismiss()
     }
 }

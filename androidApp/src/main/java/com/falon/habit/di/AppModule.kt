@@ -2,12 +2,15 @@ package com.falon.habit.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.falon.habit.data.HabitDatabase
-import com.falon.habit.data.DatabaseDriverFactory
+import com.falon.habit.data.FirebaseUserRepository
+import com.falon.habit.data.FirestoreHabitsRepository
+import com.falon.habit.data.HabitsRepository
 import com.falon.habit.data.KeyValuePersistentStorage
 import com.falon.habit.data.KeyValuePersistentStorageImpl
-import com.falon.habit.data.HabitsRepository
-import com.falon.habit.domain.IncreaseNoMediaCounterUseCase
+import com.falon.habit.data.UserRepository
+import com.falon.habit.domain.usecase.IncreaseNoMediaCounterUseCase
+import com.falon.habit.domain.usecase.RegisterUserUseCase
+import com.falon.habit.domain.usecase.ShareHabitWithUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,17 +33,34 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideHabitsCounterRepository(
-        @ApplicationContext context: Context,
-    ): HabitsRepository =
-        HabitsRepository(
-            HabitDatabase(DatabaseDriverFactory(context).provide()),
-        )
+    fun provideHabitsCounterRepository(): HabitsRepository =
+        FirestoreHabitsRepository()
+
+    @Provides
+    @Singleton
+    fun provideUserRepository(): UserRepository =
+        FirebaseUserRepository()
 
     @Provides
     fun provideIncreaseNoMediaCounterUseCase(
         noSocialMediaRepository: HabitsRepository
     ): IncreaseNoMediaCounterUseCase = IncreaseNoMediaCounterUseCase(
         noSocialMediaRepository = noSocialMediaRepository,
+    )
+
+    @Provides
+    fun provideRegisterUserUseCase(
+        userRepository: UserRepository,
+    ): RegisterUserUseCase = RegisterUserUseCase(
+        userRepository = userRepository,
+    )
+
+    @Provides
+    fun provideShareHabitWithUseCase(
+        habitsRepository: HabitsRepository,
+        userRepository: UserRepository,
+    ): ShareHabitWithUseCase = ShareHabitWithUseCase(
+        habitsRepository = habitsRepository,
+        userRepository = userRepository,
     )
 }

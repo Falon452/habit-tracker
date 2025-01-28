@@ -1,16 +1,17 @@
-package com.falon.habit.domain
+package com.falon.habit.domain.usecase
 
-import com.falon.habit.domain.HabitCounter.Companion.getIncreasedCounter
+import com.falon.habit.data.HabitsRepository
+import com.falon.habit.domain.model.DomainError
+import com.falon.habit.domain.model.HabitCounter.Companion.getIncreasedCounter
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.asErr
-import com.falon.habit.data.HabitsRepository
 
 class IncreaseNoMediaCounterUseCase(
     private val noSocialMediaRepository: HabitsRepository,
 ) {
 
-    fun execute(id: UInt) : Result<Unit, DomainError> {
-        val socialMediaResult = noSocialMediaRepository.getSocialMedia(id)
+    suspend fun execute(id: String) : Result<Unit, DomainError> {
+        val socialMediaResult = noSocialMediaRepository.getHabit(id)
         if (socialMediaResult.isErr) {
             return socialMediaResult.asErr()
         }
@@ -22,6 +23,6 @@ class IncreaseNoMediaCounterUseCase(
             return increasedCounter.asErr()
         }
 
-        return noSocialMediaRepository.replaceSocialMedias(increasedCounter.value)
+        return noSocialMediaRepository.replaceHabits(increasedCounter.value)
     }
 }

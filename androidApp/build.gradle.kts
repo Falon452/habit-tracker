@@ -5,6 +5,7 @@ plugins {
     id("dagger.hilt.android.plugin")
     kotlin("plugin.serialization") version Deps.kotlinVersion
     id("com.google.gms.google-services")
+    id("org.jetbrains.kotlin.plugin.compose") version Deps.kotlinVersion
 }
 
 android {
@@ -52,17 +53,17 @@ dependencies {
     implementation(Deps.activityCompose)
     implementation(Deps.composeIconsExtended)
     implementation(Deps.composeNavigation)
-    implementation(Deps.coilCompose)
     implementation(platform(Deps.firebaseBom))
     implementation(Deps.firebaseAuth)
     implementation(Deps.firebaseUiAuth)
+    implementation(Deps.gitLiveFirebaseFireStore)
+    implementation(Deps.gitLiveFirebaseAuth)
 
     implementation(Deps.hiltAndroid)
     kapt(Deps.hiltAndroidCompiler)
     kapt(Deps.hiltCompiler)
     implementation(Deps.hiltNavigationCompose)
 
-    implementation(Deps.ktorAndroid)
 
     androidTestImplementation(Deps.testRunner)
     androidTestImplementation(Deps.jUnit)

@@ -26,26 +26,25 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(Deps.ktorCore)
-                implementation(Deps.ktorSerialization)
-                implementation(Deps.ktorSerializationJson)
                 implementation(Deps.sqlDelightRuntime)
                 implementation(Deps.sqlDelightCoroutinesExtensions)
                 implementation(Deps.kotlinDateTime)
                 implementation(Deps.kotlinResult)
+                implementation(Deps.gitLiveFirebaseFireStore)
+                implementation(Deps.gitLiveFirebaseAuth)
+                implementation(Deps.kotlinxSerializationJson)
+                implementation(Deps.kotlinxSerializationCore)
             }
         }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
-                implementation(Deps.assertK)
-                implementation(Deps.turbine)
             }
         }
         val androidMain by getting {
             dependencies {
-                implementation(Deps.ktorAndroid)
                 implementation(Deps.sqlDelightAndroidDriver)
+                implementation(project.dependencies.platform(Deps.firebaseBom))
             }
         }
         val androidUnitTest by getting
@@ -59,7 +58,6 @@ kotlin {
             iosSimulatorArm64Main.dependsOn(this)
 
             dependencies {
-                implementation(Deps.ktorIOS)
                 implementation(Deps.sqlDelightNativeDriver)
             }
         }
