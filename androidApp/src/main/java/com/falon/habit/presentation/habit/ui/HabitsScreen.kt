@@ -61,6 +61,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.falon.habit.domain.model.HabitCounter
+import com.falon.habit.presentation.Colors
 import com.falon.habit.presentation.habit.viewmodel.AndroidHabitsViewModel
 
 @Composable
@@ -157,8 +158,8 @@ fun CollapsingTitle(
                         .background(
                             Brush.linearGradient(
                                 listOf(
-                                    Color(0xFF00A87E), // Teal (Fresh Look)
-                                    Color(0xFF0077B6)  // Blue (Cool Contrast)
+                                    Color(Colors.LifeBlue), // Teal (Fresh Look)
+                                    Color(Colors.LifeGrey)  // Blue (Cool Contrast)
                                 )
                             ),
                             shape = RoundedCornerShape(8.dp)

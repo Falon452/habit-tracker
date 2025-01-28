@@ -10,4 +10,15 @@ object Colors {
     const val WarningOrange = 0xFFFF7043 // For calls-to-action or notifications
     const val SuccessGreen = 0xFF4CAF50 // For completion states
     const val ErrorRed = 0xFFF44336 // For errors
+
+    const val PastelPink = 0xFFC6878F
+    const val PastelCream = 0xFFB79D94
+    const val PastelGrey = 0xFF969696
+    const val ShinyOcean = 0xFF72E1D1
+
+    const val LifeGrey = 0xFF363636
+    const val LifeOrange = 0xFFFF6B35
+    const val LifeDarkCream = 0xFFF7C59F
+    const val LifeLightCream = 0xFFEFEFD0
+    const val LifeBlue = 0xFF00A7E1
 }
