@@ -1,76 +1,98 @@
 package com.falon.habit.presentation.habit.ui
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Card
+import androidx.compose.material.Divider
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
-import com.falon.habit.domain.HabitCounter
-import com.falon.habit.domain.HabitCounter.HabitCounterDataClass
+import com.falon.habit.domain.model.HabitCounter
+import com.falon.habit.presentation.Colors
 import com.falon.habit.presentation.habit.viewmodel.AndroidHabitsViewModel
-
 
 @Composable
 fun HabitsScreen(
     viewModel: AndroidHabitsViewModel = hiltViewModel(),
 ) {
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
-    val viewState by produceState(
-        initialValue = viewModel.state.value,
-    ) {
-        lifecycle.repeatOnLifecycle(state = Lifecycle.State.STARTED) {
-            viewModel.state.collect {
-                value = it
-            }
-        }
-    }
+    val viewState by viewModel.state.collectAsState()
     val focusRequester = remember { FocusRequester() }
+    val listState = rememberLazyListState()
 
     HandleEffects(viewModel, focusRequester)
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Scaffold(floatingActionButton = { FloatingActionButton(viewModel::onFabClick) }) { padding ->
+        Scaffold(
+            floatingActionButton = { FloatingActionButton(viewModel::onFabClick) },
+            topBar = {
+                CollapsingTitle(
+                    title = "Habits",
+                    listState = listState
+                )
+            }
+        ) { padding ->
             HabitsColumn(
+                listState = listState,
                 habitItems = viewState.habitCounters,
-                onSocialMediaClicked = viewModel::onSocialMediaClicked,
+                onHabitClicked = viewModel::onHabitClicked,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
                     .padding(16.dp),
+                onHabitLongClicked = viewModel::onHabitLongClicked,
             )
         }
 
@@ -84,9 +106,77 @@ fun HabitsScreen(
                 .align(Alignment.BottomCenter)
                 .background(MaterialTheme.colors.background),
         )
+        ShareDialog(
+            isVisible = viewState.isShareHabitDialogVisible,
+            onDismiss = viewModel::onShareHabitDialogDismiss,
+            onShareHabitWith = viewModel::onShareHabitWith,
+        )
     }
 }
 
+@Composable
+fun CollapsingTitle(
+    title: String,
+    listState: LazyListState
+) {
+    val scrollOffset = listState.firstVisibleItemScrollOffset
+    val firstItemIndex = listState.firstVisibleItemIndex
+
+    // Calculate title height reduction based on scroll
+    val titleHeight by animateFloatAsState(
+        targetValue = if (firstItemIndex > 0 || scrollOffset > 100) 0f else 1f,
+        animationSpec = tween(durationMillis = 300)
+    )
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colors.surface),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        if (titleHeight > 0f) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp * titleHeight), // More padding to make it stand out
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.h4.copy(
+                        fontSize = (32.sp * titleHeight), // Bigger title
+                        fontWeight = FontWeight.Bold, // Make it stand out
+                        letterSpacing = 2.sp // Adds spacing between letters
+                    ),
+                    color = Color.White, // Text color for better contrast
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .shadow(
+                            8.dp * titleHeight, // Soft shadow effect
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .background(
+                            Brush.linearGradient(
+                                listOf(
+                                    Color(Colors.LifeBlue), // Teal (Fresh Look)
+                                    Color(Colors.LifeGrey)  // Blue (Cool Contrast)
+                                )
+                            ),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .padding(horizontal = 24.dp, vertical = 8.dp * titleHeight) // Extra padding inside
+                )
+            }
+        }
+
+        Divider(
+            color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f),
+            thickness = 1.dp
+        )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun BottomSheetDialog(
     isBottomDialogVisible: Boolean,
@@ -106,8 +196,9 @@ private fun BottomSheetDialog(
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth()
-                .clickable(
+                .combinedClickable(
                     onClick = {},
+                    onLongClick = {},
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
                 ),
@@ -155,20 +246,80 @@ private fun NewHabitButton(
 
 @Composable
 private fun HabitsColumn(
-    habitItems: List<HabitCounterDataClass>,
-    onSocialMediaClicked: (UInt) -> Unit,
+    habitItems: List<HabitCounter>,
+    onHabitClicked: (String) -> Unit,
+    onHabitLongClicked: (String) -> Unit,
     modifier: Modifier = Modifier,
+    listState: LazyListState,
 ) {
-    LazyColumn(modifier = modifier) {
+    LazyColumn(
+        modifier = modifier,
+        state = listState,
+    ) {
         items(habitItems.size) { index ->
             val item = habitItems[index]
             ClickableCard(
                 item = habitItems[index],
-                onClick = { onSocialMediaClicked(item.id) }
+                onClick = { onHabitClicked(item.id) },
+                onLongClick = { onHabitLongClicked(item.id) }
             )
         }
     }
 }
+
+@Composable
+fun ShareDialog(
+    isVisible: Boolean,
+    onDismiss: () -> Unit,
+    onShareHabitWith: (email: String) -> Unit,
+) {
+    if (isVisible) {
+        Dialog(onDismissRequest = { onDismiss() }) {
+            Column(
+                modifier = Modifier
+                    .background(
+                        color = MaterialTheme.colors.surface,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.12f),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .padding(32.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                var emailInput by remember { mutableStateOf("") }
+
+                Text(
+                    text = "Share habit with",
+                    style = MaterialTheme.typography.h6,
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    color = MaterialTheme.colors.onSurface
+                )
+
+                TextField(
+                    value = emailInput,
+                    onValueChange = { emailInput = it },
+                    label = { Text("Enter e-mail") },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = MaterialTheme.colors.surface
+                    )
+                )
+
+                Button(
+                    onClick = { onShareHabitWith(emailInput) },
+                    modifier = Modifier.align(Alignment.End),
+                    shape = MaterialTheme.shapes.small
+                ) {
+                    Text("Search", color = MaterialTheme.colors.onPrimary)
+                }
+            }
+        }
+    }
+}
+
 
 @Composable
 private fun FloatingActionButton(onFabClick: () -> Unit) {
@@ -188,6 +339,7 @@ fun HandleEffects(
 ) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val keyboardController = LocalSoftwareKeyboardController.current
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
         lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.effects.collect {
@@ -195,38 +347,46 @@ fun HandleEffects(
                     viewModel.consumeEffect(),
                     keyboardController,
                     focusRequester,
+                    showToast = { text ->
+                        Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
+                    }
                 )
             }
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ClickableCard(item: HabitCounter, onClick: () -> Unit) {
+fun ClickableCard(item: HabitCounter, onClick: () -> Unit, onLongClick: () -> Unit) {
     Card(
         modifier = Modifier
-            .padding(8.dp)
+            .minimumInteractiveComponentSize()
             .fillMaxWidth()
-            .clickable {
-                onClick()
-            },
+            .padding(8.dp),
         elevation = 8.dp
     ) {
-        Box {
+        Box(
+            modifier = Modifier
+                .padding(2.dp)
+                .combinedClickable(
+                    onClick = onClick,
+                    onLongClick = onLongClick
+                ),
+        ) {
             Text(
                 text = item.name.value,
                 modifier = Modifier
                     .align(Alignment.CenterStart)
                     .padding(8.dp)
-                    .padding(4.dp)
             )
             Text(
                 text = item.numberOfDays.toString(),
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .padding(8.dp)
-                    .padding(4.dp)
             )
         }
     }
 }
+

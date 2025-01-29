@@ -5,20 +5,27 @@ import android.util.Log
 import androidx.activity.result.ActivityResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.falon.habit.domain.model.User
+import com.falon.habit.domain.usecase.RegisterUserUseCase
 import com.falon.habit.presentation.splash.effect.SplashEffect
 import com.falon.habit.presentation.splash.effect.SplashEffect.AlphaImage
 import com.falon.habit.presentation.splash.effect.SplashEffect.ScaleImage
 import com.falon.habit.presentation.splash.router.AndroidSplashRouter
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AndroidSplashViewModel : ViewModel() {
+@HiltViewModel
+class AndroidSplashViewModel @Inject constructor(
+    private val registerUserUseCase: RegisterUserUseCase,
+): ViewModel() {
 
     private val _effects: MutableStateFlow<List<SplashEffect>> = MutableStateFlow(emptyList())
     val effects = _effects.asStateFlow()
@@ -30,7 +37,20 @@ class AndroidSplashViewModel : ViewModel() {
             "onSignInResult response: $response, result: $result, Current user: ${FirebaseAuth.getInstance().currentUser}"
         )
         if (result.resultCode == RESULT_OK) {
-            val user = FirebaseAuth.getInstance().currentUser
+            FirebaseAuth.getInstance().currentUser?.let { user ->
+                val email = user.email
+                if (email != null) {
+                    viewModelScope.launch {
+                        registerUserUseCase.execute(User(email = email, uid = user.uid))
+                    }
+                } else {
+                    Log.i(
+                        TAG,
+                        "Email is null for user $user"
+                    )
+                }
+            }
+
             _effects.sendEffect(SplashEffect.RouteToHabits)
         } else {
             _effects.sendEffect(SplashEffect.SignIn)
