@@ -21,10 +21,10 @@ class InMemoryHabitsRepository(
 
     private val queries = db.habitsdbQueries
 
-    override fun observeSocialMedias(): CommonFlow<List<Result<HabitCounter, DomainError>>> {
+    override fun observeHabits(): CommonFlow<List<Result<HabitCounter, DomainError>>> {
         return queries.getSocialMedias().asFlow().mapToList().map { habits ->
             habits.map {
-                HabitCounter.firstCreation(
+                HabitCounter.create(
                     it.id.toString(),
                     it.daysCount.toInt(),
                     it.name,
@@ -34,7 +34,7 @@ class InMemoryHabitsRepository(
         }.toCommonFlow()
     }
 
-    override suspend fun insertHabits(habitCounter: HabitCounter): Result<Unit, DomainError.DatabaseError> {
+    override suspend fun insertHabit(habitCounter: HabitCounter): Result<Unit, DomainError.DatabaseError> {
         return runCatching {
             queries.insertSocialMediaEntity(
                 habitCounter.name.value,
@@ -63,7 +63,7 @@ class InMemoryHabitsRepository(
             .flatMapEither(
                 failure = { Err(DomainError.DatabaseError(it)) },
                 success = {
-                    HabitCounter.firstCreation(
+                    HabitCounter.create(
                         it.id.toString(),
                         it.daysCount.toInt(),
                         it.name,

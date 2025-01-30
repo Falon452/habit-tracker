@@ -8,9 +8,14 @@ import com.falon.habit.data.HabitsRepository
 import com.falon.habit.data.KeyValuePersistentStorage
 import com.falon.habit.data.KeyValuePersistentStorageImpl
 import com.falon.habit.data.UserRepository
+import com.falon.habit.domain.usecase.AddNewHabitUseCase
 import com.falon.habit.domain.usecase.IncreaseNoMediaCounterUseCase
+import com.falon.habit.domain.usecase.IsHabitDisabledUseCase
+import com.falon.habit.domain.usecase.ObserveHabitsUseCase
 import com.falon.habit.domain.usecase.RegisterUserUseCase
 import com.falon.habit.domain.usecase.ShareHabitWithUseCase
+import com.falon.habit.presentation.mapper.HabitItemMapper
+import com.falon.habit.presentation.mapper.HabitsViewStateMapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -54,6 +59,34 @@ object AppModule {
     ): RegisterUserUseCase = RegisterUserUseCase(
         userRepository = userRepository,
     )
+
+    @Provides
+    fun provideAddNewHabitUseCase(
+        habitsRepository: HabitsRepository,
+    ): AddNewHabitUseCase = AddNewHabitUseCase(
+        repository = habitsRepository,
+    )
+
+    @Provides
+    fun provideObserveHabitsUseCase(
+        habitsRepository: HabitsRepository
+    ) = ObserveHabitsUseCase(
+        repository = habitsRepository,
+    )
+
+    @Provides
+    fun provideIsHabitDisabledUseCase() =
+        IsHabitDisabledUseCase()
+
+    @Provides
+    fun provideHabitItemMapper(isHabitDisabledUseCase: IsHabitDisabledUseCase) = HabitItemMapper(
+        isHabitDisabledUseCase
+    )
+
+    @Provides
+    fun provideHabitViewStateMapper(
+        habitItemMapper: HabitItemMapper
+    ) = HabitsViewStateMapper(habitItemMapper)
 
     @Provides
     fun provideShareHabitWithUseCase(

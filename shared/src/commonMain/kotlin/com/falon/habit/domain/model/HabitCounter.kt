@@ -26,9 +26,9 @@ data class HabitCounter(
 
     companion object {
 
-        private const val INITIAL_COUNTER_VALUE = 0
+        const val INITIAL_COUNTER_VALUE = 0
 
-        fun firstCreation(
+        fun create(
             id: String,
             numberOfDays: Int,
             name: String,
@@ -94,7 +94,7 @@ data class HabitCounter(
                     numberOfDays != INITIAL_COUNTER_VALUE.toUInt()
         }
 
-        fun firstCreation(bottomDialogText: String): Result<HabitCounter, DomainError> {
+        fun create(bottomDialogText: String): Result<HabitCounter, DomainError> {
             val notEmptyNameResult = bottomDialogText.notEmptyStringOf()
             val dateTime: LocalDateTime
 

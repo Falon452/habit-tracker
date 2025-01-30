@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -60,12 +61,12 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
-import com.falon.habit.domain.model.HabitCounter
 import com.falon.habit.presentation.Colors
 import com.falon.habit.presentation.habit.viewmodel.AndroidHabitsViewModel
+import com.falon.habit.presentation.model.HabitItem
 
 @Composable
-fun HabitsScreen(
+internal fun HabitsScreen(
     viewModel: AndroidHabitsViewModel = hiltViewModel(),
 ) {
     val viewState by viewModel.state.collectAsState()
@@ -86,7 +87,7 @@ fun HabitsScreen(
         ) { padding ->
             HabitsColumn(
                 listState = listState,
-                habitItems = viewState.habitCounters,
+                habitItems = viewState.habitItems,
                 onHabitClicked = viewModel::onHabitClicked,
                 modifier = Modifier
                     .fillMaxSize()
@@ -246,7 +247,7 @@ private fun NewHabitButton(
 
 @Composable
 private fun HabitsColumn(
-    habitItems: List<HabitCounter>,
+    habitItems: List<HabitItem>,
     onHabitClicked: (String) -> Unit,
     onHabitLongClicked: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -257,11 +258,10 @@ private fun HabitsColumn(
         state = listState,
     ) {
         items(habitItems.size) { index ->
-            val item = habitItems[index]
             ClickableCard(
                 item = habitItems[index],
-                onClick = { onHabitClicked(item.id) },
-                onLongClick = { onHabitLongClicked(item.id) }
+                onClick = onHabitClicked,
+                onLongClick = onHabitLongClicked,
             )
         }
     }
@@ -331,7 +331,6 @@ private fun FloatingActionButton(onFabClick: () -> Unit) {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HandleEffects(
     viewModel: AndroidHabitsViewModel,
@@ -356,23 +355,27 @@ fun HandleEffects(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
-fun ClickableCard(item: HabitCounter, onClick: () -> Unit, onLongClick: () -> Unit) {
+fun ClickableCard(item: HabitItem, onClick: (id: String) -> Unit, onLongClick: (id: String) -> Unit) {
     Card(
+        onClick = {
+            onClick.invoke(item.id)
+        },
         modifier = Modifier
             .minimumInteractiveComponentSize()
             .fillMaxWidth()
-            .padding(8.dp),
-        elevation = 8.dp
+            .padding(8.dp)
+            .combinedClickable(
+                onClick = { onClick.invoke(item.id) },
+                onLongClick = { onLongClick.invoke(item.id) }
+            ),
+        elevation = 8.dp,
+        enabled = item.isDisabled,
     ) {
         Box(
             modifier = Modifier
-                .padding(2.dp)
-                .combinedClickable(
-                    onClick = onClick,
-                    onLongClick = onLongClick
-                ),
+                .padding(2.dp),
         ) {
             Text(
                 text = item.name.value,

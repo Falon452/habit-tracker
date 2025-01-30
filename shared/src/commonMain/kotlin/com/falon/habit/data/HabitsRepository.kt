@@ -7,9 +7,9 @@ import com.github.michaelbull.result.Result
 
 interface HabitsRepository {
 
-    fun observeSocialMedias(): CommonFlow<List<Result<HabitCounter, DomainError>>>
+    fun observeHabits(): CommonFlow<List<Result<HabitCounter, DomainError>>>
 
-    suspend fun insertHabits(habitCounter: HabitCounter): Result<Unit, DomainError.DatabaseError>
+    suspend fun insertHabit(habitCounter: HabitCounter): Result<Unit, DomainError.DatabaseError>
 
     suspend fun replaceHabits(habitCounter: HabitCounter): Result<Unit, DomainError.DatabaseError>
 

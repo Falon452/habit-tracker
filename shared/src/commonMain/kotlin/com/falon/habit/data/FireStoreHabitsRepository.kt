@@ -17,7 +17,7 @@ class FirestoreHabitsRepository : HabitsRepository {
 
     private val firestore = Firebase.firestore
 
-    override fun observeSocialMedias(): CommonFlow<List<Result<HabitCounter, DomainError>>> =
+    override fun observeHabits(): CommonFlow<List<Result<HabitCounter, DomainError>>> =
         flow {
             val currentUserUid = Firebase.auth.currentUser?.uid
                 ?: throw Exception("User not authenticated")
@@ -41,7 +41,7 @@ class FirestoreHabitsRepository : HabitsRepository {
 
 
 
-    override suspend fun insertHabits(habitCounter: HabitCounter): Result<Unit, DomainError.DatabaseError> {
+    override suspend fun insertHabit(habitCounter: HabitCounter): Result<Unit, DomainError.DatabaseError> {
         return try {
             val generatedId = firestore.collection("HABITS").document.id
 
