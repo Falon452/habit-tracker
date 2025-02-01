@@ -6,5 +6,5 @@ data class HabitItem(
     val id: String,
     val name: NotEmptyString,
     val numberOfDays: UInt,
-    val isDisabled: Boolean,
+    val isEnabled: Boolean,
 )

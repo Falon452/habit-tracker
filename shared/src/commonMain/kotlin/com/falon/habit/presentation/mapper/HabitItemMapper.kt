@@ -14,7 +14,7 @@ class HabitItemMapper(
                 id = id,
                 name = name,
                 numberOfDays = numberOfDays,
-                isDisabled = isHabitDisabledUseCase.execute(habitCounter),
+                isEnabled = !isHabitDisabledUseCase.execute(habitCounter),
             )
         }
 }
