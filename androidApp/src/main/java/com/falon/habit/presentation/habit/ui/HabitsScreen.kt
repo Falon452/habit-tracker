@@ -25,7 +25,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -356,13 +355,10 @@ fun HandleEffects(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ClickableCard(item: HabitItem, onClick: (id: String) -> Unit, onLongClick: (id: String) -> Unit) {
     Card(
-        onClick = {
-            onClick.invoke(item.id)
-        },
         modifier = Modifier
             .minimumInteractiveComponentSize()
             .fillMaxWidth()
@@ -374,7 +370,6 @@ fun ClickableCard(item: HabitItem, onClick: (id: String) -> Unit, onLongClick: (
                 onLongClick = { onLongClick.invoke(item.id) }
             ),
         elevation = if (item.isEnabled) 8.dp else 0.dp,
-        enabled = item.isEnabled,
     ) {
         Box(
             modifier = Modifier
