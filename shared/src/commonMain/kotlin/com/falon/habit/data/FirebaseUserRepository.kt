@@ -1,12 +1,12 @@
 package com.falon.habit.data
 
-import com.falon.habit.domain.model.DomainError
+import com.falon.habit.domain.contract.UserRepository
 import com.falon.habit.domain.model.User
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.firestore.firestore
 
 
-class FirebaseUserRepository: UserRepository {
+class FirebaseUserRepository : UserRepository {
     private val firestore = Firebase.firestore
 
     // Retrieve a user by email

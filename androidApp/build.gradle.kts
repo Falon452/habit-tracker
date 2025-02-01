@@ -24,7 +24,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = Deps.composeVersion
     }
-    packagingOptions {
+    packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
@@ -58,6 +58,7 @@ dependencies {
     implementation(Deps.firebaseUiAuth)
     implementation(Deps.gitLiveFirebaseFireStore)
     implementation(Deps.gitLiveFirebaseAuth)
+    implementation(Deps.kotlinDateTime)
 
     implementation(Deps.hiltAndroid)
     kapt(Deps.hiltAndroidCompiler)

@@ -1,4 +1,4 @@
-package com.falon.habit.data
+package com.falon.habit.domain.contract
 
 import com.falon.habit.domain.model.User
 

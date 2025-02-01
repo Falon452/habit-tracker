@@ -37,14 +37,16 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.asIntState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -60,12 +62,12 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
-import com.falon.habit.domain.model.HabitCounter
 import com.falon.habit.presentation.Colors
 import com.falon.habit.presentation.habit.viewmodel.AndroidHabitsViewModel
+import com.falon.habit.presentation.model.HabitItem
 
 @Composable
-fun HabitsScreen(
+internal fun HabitsScreen(
     viewModel: AndroidHabitsViewModel = hiltViewModel(),
 ) {
     val viewState by viewModel.state.collectAsState()
@@ -86,7 +88,7 @@ fun HabitsScreen(
         ) { padding ->
             HabitsColumn(
                 listState = listState,
-                habitItems = viewState.habitCounters,
+                habitItems = viewState.habitItems,
                 onHabitClicked = viewModel::onHabitClicked,
                 modifier = Modifier
                     .fillMaxSize()
@@ -117,15 +119,14 @@ fun HabitsScreen(
 @Composable
 fun CollapsingTitle(
     title: String,
-    listState: LazyListState
+    listState: LazyListState,
 ) {
-    val scrollOffset = listState.firstVisibleItemScrollOffset
-    val firstItemIndex = listState.firstVisibleItemIndex
+    val scrollOffset = remember { derivedStateOf { listState.firstVisibleItemScrollOffset } }
+    val firstItemIndex = remember { derivedStateOf { listState.firstVisibleItemIndex } }
 
-    // Calculate title height reduction based on scroll
     val titleHeight by animateFloatAsState(
-        targetValue = if (firstItemIndex > 0 || scrollOffset > 100) 0f else 1f,
-        animationSpec = tween(durationMillis = 300)
+        targetValue = if (firstItemIndex.asIntState().intValue > 0 || scrollOffset.asIntState().intValue > 100) 0f else 1f,
+        animationSpec = tween(durationMillis = 300), label = "Animating Habits"
     )
 
     Column(
@@ -138,33 +139,33 @@ fun CollapsingTitle(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 16.dp * titleHeight), // More padding to make it stand out
+                    .padding(vertical = 16.dp * titleHeight),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.h4.copy(
-                        fontSize = (32.sp * titleHeight), // Bigger title
-                        fontWeight = FontWeight.Bold, // Make it stand out
-                        letterSpacing = 2.sp // Adds spacing between letters
+                        fontSize = (32.sp * titleHeight),
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 2.sp
                     ),
-                    color = Color.White, // Text color for better contrast
+                    color = Color.White,
                     modifier = Modifier
                         .align(Alignment.Center)
                         .shadow(
-                            8.dp * titleHeight, // Soft shadow effect
+                            8.dp * titleHeight,
                             shape = RoundedCornerShape(8.dp)
                         )
                         .background(
                             Brush.linearGradient(
                                 listOf(
-                                    Color(Colors.LifeBlue), // Teal (Fresh Look)
-                                    Color(Colors.LifeGrey)  // Blue (Cool Contrast)
+                                    Color(Colors.LifeBlue),
+                                    Color(Colors.LifeGrey)
                                 )
                             ),
                             shape = RoundedCornerShape(8.dp)
                         )
-                        .padding(horizontal = 24.dp, vertical = 8.dp * titleHeight) // Extra padding inside
+                        .padding(horizontal = 24.dp, vertical = 8.dp * titleHeight)
                 )
             }
         }
@@ -246,7 +247,7 @@ private fun NewHabitButton(
 
 @Composable
 private fun HabitsColumn(
-    habitItems: List<HabitCounter>,
+    habitItems: List<HabitItem>,
     onHabitClicked: (String) -> Unit,
     onHabitLongClicked: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -257,11 +258,10 @@ private fun HabitsColumn(
         state = listState,
     ) {
         items(habitItems.size) { index ->
-            val item = habitItems[index]
             ClickableCard(
                 item = habitItems[index],
-                onClick = { onHabitClicked(item.id) },
-                onLongClick = { onHabitLongClicked(item.id) }
+                onClick = onHabitClicked,
+                onLongClick = onHabitLongClicked,
             )
         }
     }
@@ -331,11 +331,10 @@ private fun FloatingActionButton(onFabClick: () -> Unit) {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HandleEffects(
     viewModel: AndroidHabitsViewModel,
-    focusRequester: FocusRequester
+    focusRequester: FocusRequester,
 ) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -358,21 +357,27 @@ fun HandleEffects(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ClickableCard(item: HabitCounter, onClick: () -> Unit, onLongClick: () -> Unit) {
+fun ClickableCard(
+    item: HabitItem,
+    onClick: (id: String) -> Unit,
+    onLongClick: (id: String) -> Unit,
+) {
     Card(
         modifier = Modifier
             .minimumInteractiveComponentSize()
             .fillMaxWidth()
-            .padding(8.dp),
-        elevation = 8.dp
+            .padding(8.dp)
+            .alpha(if (item.isEnabled) 1f else 0.5f)
+            .combinedClickable(
+                enabled = item.isEnabled,
+                onClick = { onClick.invoke(item.id) },
+                onLongClick = { onLongClick.invoke(item.id) }
+            ),
+        elevation = if (item.isEnabled) 8.dp else 0.dp,
     ) {
         Box(
             modifier = Modifier
-                .padding(2.dp)
-                .combinedClickable(
-                    onClick = onClick,
-                    onLongClick = onLongClick
-                ),
+                .padding(2.dp),
         ) {
             Text(
                 text = item.name.value,
@@ -389,4 +394,3 @@ fun ClickableCard(item: HabitCounter, onClick: () -> Unit, onLongClick: () -> Un
         }
     }
 }
-

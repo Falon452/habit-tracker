@@ -4,13 +4,19 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.falon.habit.data.FirebaseUserRepository
 import com.falon.habit.data.FirestoreHabitsRepository
-import com.falon.habit.data.HabitsRepository
-import com.falon.habit.data.KeyValuePersistentStorage
 import com.falon.habit.data.KeyValuePersistentStorageImpl
-import com.falon.habit.data.UserRepository
-import com.falon.habit.domain.usecase.IncreaseNoMediaCounterUseCase
+import com.falon.habit.data.mapper.HabitDataMapper
+import com.falon.habit.domain.contract.HabitsRepository
+import com.falon.habit.domain.contract.KeyValuePersistentStorage
+import com.falon.habit.domain.contract.UserRepository
+import com.falon.habit.domain.specification.HabitDisabledSpec
+import com.falon.habit.domain.usecase.AddHabitUseCase
+import com.falon.habit.domain.usecase.IncreaseHabitStreakUseCase
+import com.falon.habit.domain.usecase.ObserveHabitsUseCase
 import com.falon.habit.domain.usecase.RegisterUserUseCase
 import com.falon.habit.domain.usecase.ShareHabitWithUseCase
+import com.falon.habit.presentation.mapper.HabitItemMapper
+import com.falon.habit.presentation.mapper.HabitsViewStateMapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,20 +38,26 @@ object AppModule {
         KeyValuePersistentStorageImpl(sharedPreferences)
 
     @Provides
-    @Singleton
-    fun provideHabitsCounterRepository(): HabitsRepository =
-        FirestoreHabitsRepository()
+    fun provideHabitMapperImpl(): HabitDataMapper = HabitDataMapper(
+        habitDisabledSpec = HabitDisabledSpec()
+    )
 
     @Provides
     @Singleton
-    fun provideUserRepository(): UserRepository =
-        FirebaseUserRepository()
+    fun provideHabitsRepository(habitDataMapper: HabitDataMapper): HabitsRepository =
+        FirestoreHabitsRepository(
+            habitDataMapper = habitDataMapper,
+        )
+
+    @Provides
+    @Singleton
+    fun provideUserRepository(): UserRepository = FirebaseUserRepository()
 
     @Provides
     fun provideIncreaseNoMediaCounterUseCase(
-        noSocialMediaRepository: HabitsRepository
-    ): IncreaseNoMediaCounterUseCase = IncreaseNoMediaCounterUseCase(
-        noSocialMediaRepository = noSocialMediaRepository,
+        noSocialMediaRepository: HabitsRepository,
+    ): IncreaseHabitStreakUseCase = IncreaseHabitStreakUseCase(
+        habitsRepository = noSocialMediaRepository,
     )
 
     @Provides
@@ -54,6 +66,28 @@ object AppModule {
     ): RegisterUserUseCase = RegisterUserUseCase(
         userRepository = userRepository,
     )
+
+    @Provides
+    fun provideAddNewHabitUseCase(
+        habitsRepository: HabitsRepository,
+    ): AddHabitUseCase = AddHabitUseCase(
+        habitsRepository = habitsRepository,
+    )
+
+    @Provides
+    fun provideObserveHabitsUseCase(
+        habitsRepository: HabitsRepository,
+    ) = ObserveHabitsUseCase(
+        habitsRepository = habitsRepository,
+    )
+
+    @Provides
+    fun provideHabitItemMapper() = HabitItemMapper()
+
+    @Provides
+    fun provideHabitViewStateMapper(
+        habitItemMapper: HabitItemMapper,
+    ) = HabitsViewStateMapper(habitItemMapper)
 
     @Provides
     fun provideShareHabitWithUseCase(

@@ -1,14 +1,19 @@
 package com.falon.habit.presentation.viewmodel
 
-import com.falon.habit.data.HabitsRepository
 import com.falon.habit.utils.toCommonFlow
 import com.falon.habit.utils.toCommonStateFlow
-import com.falon.habit.domain.model.HabitCounter
-import com.falon.habit.domain.usecase.IncreaseNoMediaCounterUseCase
+import com.falon.habit.domain.model.Habit
+import com.falon.habit.domain.usecase.AddHabitUseCase
+import com.falon.habit.domain.usecase.IncreaseHabitStreakUseCase
+import com.falon.habit.domain.usecase.ObserveHabitsUseCase
 import com.falon.habit.domain.usecase.ShareHabitWithUseCase
 import com.falon.habit.domain.usecase.ShareHabitWithUseCaseResult
+import com.falon.habit.presentation.mapper.HabitsViewStateMapper
 import com.falon.habit.presentation.model.HabitsEffect
+import com.falon.habit.presentation.model.HabitsState
+import com.falon.habit.presentation.model.HabitsViewState
 import com.falon.habit.presentation.model.KeyboardController
+import com.falon.habit.utils.CommonStateFlow
 import com.github.michaelbull.result.filterErrors
 import com.github.michaelbull.result.filterValues
 import com.github.michaelbull.result.fold
@@ -24,34 +29,30 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-data class HabitsState(
-    val habitCounters: List<HabitCounter> = listOf(),
-    val isBottomDialogVisible: Boolean = false,
-    val bottomDialogText: String = "",
-    val isShareHabitDialogVisible: Boolean = false,
-    val shareHabitId: String? = null,
-)
-
 class HabitsViewModel(
     coroutineScope: CoroutineScope?,
-    private val increaseNoMediaCounterUseCase: IncreaseNoMediaCounterUseCase,
+    private val increaseHabitStreakUseCase: IncreaseHabitStreakUseCase,
     private val shareHabitWithUseCase: ShareHabitWithUseCase,
-    private val repository: HabitsRepository,
+    observeHabitsUseCase: ObserveHabitsUseCase,
+    private val addHabitUseCase: AddHabitUseCase,
+    viewStateMapper: HabitsViewStateMapper,
 ) {
 
     private val viewModelScope = coroutineScope ?: CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     private val _state = MutableStateFlow(HabitsState())
-    val viewState = _state
+    val viewState: CommonStateFlow<HabitsViewState> = _state
+        .map(viewStateMapper::from)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = _state.value
+            initialValue = viewStateMapper.from(_state.value)
         )
         .toCommonStateFlow()
 
@@ -59,11 +60,11 @@ class HabitsViewModel(
     val effects = _effects.filter { it.isNotEmpty() }.toCommonFlow()
 
     init {
-        repository.observeSocialMedias()
-            .onEach { socialMedias ->
-                _state.value = _state.value.copy(habitCounters = socialMedias.filterValues())
+        observeHabitsUseCase.execute()
+            .onEach { habits ->
+                _state.value = _state.value.copy(habits = habits.filterValues())
 
-                socialMedias.filterErrors().onEach {
+                habits.filterErrors().onEach {
                     println("Got error $it")
                 }
             }
@@ -75,7 +76,7 @@ class HabitsViewModel(
 
     fun onSocialMediaClicked(id: String) {
         viewModelScope.launch {
-            increaseNoMediaCounterUseCase.execute(id)
+            increaseHabitStreakUseCase.execute(id)
                 .onSuccess {
                     println("SHOW TOAST TODO")
                 }
@@ -97,9 +98,9 @@ class HabitsViewModel(
 
     fun onNewHabit() {
         viewModelScope.launch {
-            HabitCounter.firstCreation(_state.value.bottomDialogText).fold(
+            Habit.create(_state.value.bottomDialogText).fold(
                 success = {
-                    repository.insertHabits(it)
+                    addHabitUseCase.execute(it)
                 },
                 failure = {
                     println(it)

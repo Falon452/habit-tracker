@@ -5,12 +5,14 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.falon.habit.data.HabitsRepository
-import com.falon.habit.domain.usecase.IncreaseNoMediaCounterUseCase
+import com.falon.habit.domain.usecase.AddHabitUseCase
+import com.falon.habit.domain.usecase.IncreaseHabitStreakUseCase
+import com.falon.habit.domain.usecase.ObserveHabitsUseCase
 import com.falon.habit.domain.usecase.ShareHabitWithUseCase
+import com.falon.habit.presentation.mapper.HabitsViewStateMapper
 import com.falon.habit.presentation.model.HabitsEffect
+import com.falon.habit.presentation.model.HabitsViewState
 import com.falon.habit.presentation.model.KeyboardController
-import com.falon.habit.presentation.viewmodel.HabitsState
 import com.falon.habit.presentation.viewmodel.HabitsViewModel
 import com.falon.habit.utils.CommonStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,21 +20,25 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AndroidHabitsViewModel @Inject constructor(
-    increaseNoMediaCounterUseCase: IncreaseNoMediaCounterUseCase,
+    increaseHabitStreakUseCase: IncreaseHabitStreakUseCase,
     shareHabitWithUseCase: ShareHabitWithUseCase,
-    repository: HabitsRepository,
+    addHabitUseCase: AddHabitUseCase,
+    observeHabitsUseCase: ObserveHabitsUseCase,
+    viewStateMapper: HabitsViewStateMapper,
 ) : ViewModel() {
 
     private val viewModel by lazy {
         HabitsViewModel(
             coroutineScope = viewModelScope,
-            increaseNoMediaCounterUseCase = increaseNoMediaCounterUseCase,
+            increaseHabitStreakUseCase = increaseHabitStreakUseCase,
             shareHabitWithUseCase = shareHabitWithUseCase,
-            repository = repository,
+            addHabitUseCase = addHabitUseCase,
+            viewStateMapper = viewStateMapper,
+            observeHabitsUseCase = observeHabitsUseCase,
         )
     }
 
-    val state: CommonStateFlow<HabitsState> = viewModel.viewState
+    val state: CommonStateFlow<HabitsViewState> = viewModel.viewState
     val effects = viewModel.effects
 
     fun onHabitClicked(id: String) {

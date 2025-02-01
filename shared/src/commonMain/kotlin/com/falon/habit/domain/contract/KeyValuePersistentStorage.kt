@@ -1,4 +1,4 @@
-package com.falon.habit.data
+package com.falon.habit.domain.contract
 
 interface KeyValuePersistentStorage {
 

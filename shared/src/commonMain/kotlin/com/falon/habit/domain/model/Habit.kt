@@ -14,26 +14,37 @@ import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
 import kotlin.jvm.JvmInline
 
-@Serializable
-data class HabitCounter(
+data class Habit(
     val id: String,
     val userUid: String,
     val sharedWithUids: List<String>,
-    val numberOfDays: UInt,
+    val numberOfDays: Int,
     val name: NotEmptyString,
-    val lastIncreaseDateTime: LocalDateTime,
+    val streakDateTimes: List<LocalDateTime>,
+    val isDisabled: Boolean,
 ) {
 
     companion object {
 
         private const val INITIAL_COUNTER_VALUE = 0
 
-        fun firstCreation(
+        private fun notInitiallyCreated(numberOfDays: Int): Boolean {
+            return numberOfDays != INITIAL_COUNTER_VALUE
+        }
+
+        private fun wasTodayIncreased(numberOfDays: Int, lastIncreaseDateTime: LocalDateTime): Boolean {
+            val nowLocalDateTime =
+                Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+            return lastIncreaseDateTime.date == nowLocalDateTime.date &&
+                    numberOfDays != INITIAL_COUNTER_VALUE
+        }
+
+        fun create(
             id: String,
             numberOfDays: Int,
             name: String,
             lastIncreaseTimestamp: Long
-        ): Result<HabitCounter, DomainError> {
+        ): Result<Habit, DomainError> {
             val notEmptyNameResult = name.notEmptyStringOf()
             val dateTime: LocalDateTime
 
@@ -53,14 +64,17 @@ data class HabitCounter(
                 return Err(DomainError.LocalDateTimeConversionError)
             }
 
+            val numberOfDaysUInt = numberOfDays
             return Ok(
-                HabitCounter(
+                Habit(
                     id = id,
-                    numberOfDays = numberOfDays.toUInt(),
+                    numberOfDays = numberOfDaysUInt,
                     name = notEmptyNameResult.value,
-                    lastIncreaseDateTime = dateTime,
+                    streakDateTimes = listOf(dateTime),
                     userUid = requireNotNull(Firebase.auth.currentUser?.uid),
                     sharedWithUids = emptyList(),
+                    isDisabled = notInitiallyCreated(numberOfDaysUInt) && wasTodayIncreased(
+                        numberOfDaysUInt, dateTime)
                 )
             )
         }
@@ -72,51 +86,22 @@ data class HabitCounter(
                 .joinToString("")
         }
 
-        fun HabitCounter.getIncreasedCounter(): Result<HabitCounter, DomainError.WasTodayUpdatedError> {
-            if (wasTodayIncreased()) {
-                return Err(DomainError.WasTodayUpdatedError)
-            }
-            return Ok(
-                this.copy(
-                    id = id,
-                    numberOfDays = numberOfDays.inc(),
-                    name = name,
-                    lastIncreaseDateTime = Clock.System.now()
-                        .toLocalDateTime(TimeZone.currentSystemDefault()),
-                )
-            )
-        }
-
-        private fun HabitCounter.wasTodayIncreased(): Boolean {
-            val nowLocalDateTime =
-                Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-            return lastIncreaseDateTime.date == nowLocalDateTime.date &&
-                    numberOfDays != INITIAL_COUNTER_VALUE.toUInt()
-        }
-
-        fun firstCreation(bottomDialogText: String): Result<HabitCounter, DomainError> {
+        fun create(bottomDialogText: String): Result<Habit, DomainError> {
             val notEmptyNameResult = bottomDialogText.notEmptyStringOf()
-            val dateTime: LocalDateTime
 
             if (notEmptyNameResult.isErr) {
                 return Err(DomainError.EmptyStringError)
             }
-            try {
-                val lastIncreaseTimestamp = Clock.System.now().toEpochMilliseconds()
-                dateTime = Instant.fromEpochMilliseconds(lastIncreaseTimestamp)
-                    .toLocalDateTime(TimeZone.currentSystemDefault())
-            } catch (e: IllegalArgumentException) {
-                return Err(DomainError.LocalDateTimeConversionError)
-            }
 
             return Ok(
-                HabitCounter(
-                    numberOfDays = INITIAL_COUNTER_VALUE.toUInt(),
+                Habit(
+                    numberOfDays = INITIAL_COUNTER_VALUE,
                     name = notEmptyNameResult.value,
-                    lastIncreaseDateTime = dateTime,
+                    streakDateTimes = emptyList(),
                     id = generateRandomId(),
                     userUid = requireNotNull(Firebase.auth.currentUser?.uid),
                     sharedWithUids = emptyList(),
+                    isDisabled = false,
                 )
             )
 
@@ -127,12 +112,11 @@ data class HabitCounter(
 sealed interface DomainError {
 
     data object EmptyStringError : DomainError
-    data object DatabaseIsAlreadyPopulated : DomainError
-    class DatabaseError(throwable: Throwable) : DomainError
+
+    data object DatabaseError : DomainError
     data object RequireIdNotToBeEmpty : DomainError
     data object RequireNumberOfDaysToBeNotNegative : DomainError
     data object LocalDateTimeConversionError : DomainError
-    data object WasTodayUpdatedError : DomainError
 }
 
 @JvmInline

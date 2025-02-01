@@ -1,7 +1,7 @@
 package com.falon.habit.domain.usecase
 
-import com.falon.habit.data.HabitsRepository
-import com.falon.habit.data.UserRepository
+import com.falon.habit.domain.contract.HabitsRepository
+import com.falon.habit.domain.contract.UserRepository
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
@@ -25,7 +25,7 @@ class ShareHabitWithUseCase(
                     val sharedHabit = habitCounter.copy(
                         sharedWithUids = habitCounter.sharedWithUids.plus(user.uid)
                     )
-                    habitsRepository.replaceHabits(sharedHabit)
+                    habitsRepository.replaceHabit(sharedHabit)
                 }
             }
             ?: return Err(ShareHabitWithUseCaseResult.NoUserWithEmailFound(email))
