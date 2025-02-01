@@ -16,7 +16,7 @@ local.properties
 androidApp/build**
 shared/build**
 buildSrc/build**
-
+.kotlin/
 
 # Xcode
 *.xcuserstate
