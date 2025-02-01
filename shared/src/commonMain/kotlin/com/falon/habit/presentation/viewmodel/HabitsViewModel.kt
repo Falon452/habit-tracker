@@ -2,9 +2,9 @@ package com.falon.habit.presentation.viewmodel
 
 import com.falon.habit.utils.toCommonFlow
 import com.falon.habit.utils.toCommonStateFlow
-import com.falon.habit.domain.model.HabitCounter
-import com.falon.habit.domain.usecase.AddNewHabitUseCase
-import com.falon.habit.domain.usecase.IncreaseNoMediaCounterUseCase
+import com.falon.habit.domain.model.Habit
+import com.falon.habit.domain.usecase.AddHabitUseCase
+import com.falon.habit.domain.usecase.IncreaseHabitStreakUseCase
 import com.falon.habit.domain.usecase.ObserveHabitsUseCase
 import com.falon.habit.domain.usecase.ShareHabitWithUseCase
 import com.falon.habit.domain.usecase.ShareHabitWithUseCaseResult
@@ -37,10 +37,10 @@ import kotlinx.coroutines.launch
 
 class HabitsViewModel(
     coroutineScope: CoroutineScope?,
-    private val increaseNoMediaCounterUseCase: IncreaseNoMediaCounterUseCase,
+    private val increaseHabitStreakUseCase: IncreaseHabitStreakUseCase,
     private val shareHabitWithUseCase: ShareHabitWithUseCase,
-    private val observeHabitsUseCase: ObserveHabitsUseCase,
-    private val addNewHabitUseCase: AddNewHabitUseCase,
+    observeHabitsUseCase: ObserveHabitsUseCase,
+    private val addHabitUseCase: AddHabitUseCase,
     viewStateMapper: HabitsViewStateMapper,
 ) {
 
@@ -62,7 +62,7 @@ class HabitsViewModel(
     init {
         observeHabitsUseCase.execute()
             .onEach { habits ->
-                _state.value = _state.value.copy(habitCounters = habits.filterValues())
+                _state.value = _state.value.copy(habits = habits.filterValues())
 
                 habits.filterErrors().onEach {
                     println("Got error $it")
@@ -76,7 +76,7 @@ class HabitsViewModel(
 
     fun onSocialMediaClicked(id: String) {
         viewModelScope.launch {
-            increaseNoMediaCounterUseCase.execute(id)
+            increaseHabitStreakUseCase.execute(id)
                 .onSuccess {
                     println("SHOW TOAST TODO")
                 }
@@ -98,9 +98,9 @@ class HabitsViewModel(
 
     fun onNewHabit() {
         viewModelScope.launch {
-            HabitCounter.create(_state.value.bottomDialogText).fold(
+            Habit.create(_state.value.bottomDialogText).fold(
                 success = {
-                    addNewHabitUseCase.execute(it)
+                    addHabitUseCase.execute(it)
                 },
                 failure = {
                     println(it)

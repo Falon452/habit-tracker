@@ -1,6 +1,6 @@
 package com.falon.habit.domain.usecase
 
-import com.falon.habit.data.UserRepository
+import com.falon.habit.domain.contract.UserRepository
 import com.falon.habit.domain.model.User
 
 class RegisterUserUseCase(

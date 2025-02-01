@@ -1,7 +1,8 @@
 package com.falon.habit.data
 
+import com.falon.habit.domain.contract.HabitsRepository
 import com.falon.habit.domain.model.DomainError
-import com.falon.habit.domain.model.HabitCounter
+import com.falon.habit.domain.model.Habit
 import com.falon.habit.utils.CommonFlow
 import com.falon.habit.utils.toCommonFlow
 import com.github.michaelbull.result.Err
@@ -21,10 +22,10 @@ class InMemoryHabitsRepository(
 
     private val queries = db.habitsdbQueries
 
-    override fun observeHabits(): CommonFlow<List<Result<HabitCounter, DomainError>>> {
+    override fun observeHabits(): CommonFlow<List<Result<Habit, DomainError>>> {
         return queries.getSocialMedias().asFlow().mapToList().map { habits ->
             habits.map {
-                HabitCounter.create(
+                Habit.create(
                     it.id.toString(),
                     it.daysCount.toInt(),
                     it.name,
@@ -34,36 +35,36 @@ class InMemoryHabitsRepository(
         }.toCommonFlow()
     }
 
-    override suspend fun insertHabit(habitCounter: HabitCounter): Result<Unit, DomainError.DatabaseError> {
+    override suspend fun insertHabit(habit: Habit): Result<Unit, DomainError.DatabaseError> {
         return runCatching {
             queries.insertSocialMediaEntity(
-                habitCounter.name.value,
-                habitCounter.numberOfDays.toLong(),
-                habitCounter.lastIncreaseDateTime.toInstant(TimeZone.currentSystemDefault())
+                habit.name.value,
+                habit.numberOfDays.toLong(),
+                habit.streakDateTimes.last().toInstant(TimeZone.currentSystemDefault())
                     .toEpochMilliseconds(),
             )
-        }.mapError { DomainError.DatabaseError(it) }
+        }.mapError { DomainError.DatabaseError }
     }
 
-    override suspend fun replaceHabits(habitCounter: HabitCounter): Result<Unit, DomainError.DatabaseError> {
+    override suspend fun replaceHabit(habit: Habit): Result<Unit, DomainError.DatabaseError> {
         return runCatching {
             queries.replaceSocialMediaEntity(
-                habitCounter.id.toLong(),
-                habitCounter.name.value,
-                habitCounter.numberOfDays.toLong(),
-                habitCounter.lastIncreaseDateTime.toInstant(TimeZone.currentSystemDefault())
+                habit.id.toLong(),
+                habit.name.value,
+                habit.numberOfDays.toLong(),
+                habit.streakDateTimes.last().toInstant(TimeZone.currentSystemDefault())
                     .toEpochMilliseconds(),
             )
-        }.mapError { DomainError.DatabaseError(it) }
+        }.mapError { DomainError.DatabaseError }
     }
 
 
-    override suspend fun getHabit(id: String): Result<HabitCounter, DomainError> {
+    override suspend fun getHabit(id: String): Result<Habit, DomainError> {
         return runCatching { queries.getSocialMedia(id.toLong()).executeAsOne() }
             .flatMapEither(
-                failure = { Err(DomainError.DatabaseError(it)) },
+                failure = { Err(DomainError.DatabaseError) },
                 success = {
-                    HabitCounter.create(
+                    Habit.create(
                         it.id.toString(),
                         it.daysCount.toInt(),
                         it.name,

@@ -1,20 +1,17 @@
 package com.falon.habit.presentation.mapper
 
-import com.falon.habit.domain.model.HabitCounter
-import com.falon.habit.domain.usecase.IsHabitDisabledUseCase
+import com.falon.habit.domain.model.Habit
 import com.falon.habit.presentation.model.HabitItem
 
-class HabitItemMapper(
-    private val isHabitDisabledUseCase: IsHabitDisabledUseCase,
-) {
+class HabitItemMapper {
 
-    fun from(habitCounter: HabitCounter): HabitItem =
-        with(habitCounter) {
+    fun from(habit: Habit): HabitItem =
+        with(habit) {
             HabitItem(
                 id = id,
                 name = name,
                 numberOfDays = numberOfDays,
-                isEnabled = !isHabitDisabledUseCase.execute(habitCounter),
+                isEnabled = !isDisabled,
             )
         }
 }

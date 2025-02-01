@@ -10,7 +10,7 @@ class HabitsViewStateMapper(
     fun from(state: HabitsState) =
         with(state) {
             HabitsViewState(
-                habitCounters.map(habitItemMapper::from),
+                habits.map(habitItemMapper::from),
                 isBottomDialogVisible,
                 bottomDialogText,
                 isShareHabitDialogVisible,

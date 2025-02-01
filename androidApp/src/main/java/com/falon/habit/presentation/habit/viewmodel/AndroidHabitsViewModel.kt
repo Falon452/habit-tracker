@@ -5,15 +5,13 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.falon.habit.data.HabitsRepository
-import com.falon.habit.domain.usecase.AddNewHabitUseCase
-import com.falon.habit.domain.usecase.IncreaseNoMediaCounterUseCase
+import com.falon.habit.domain.usecase.AddHabitUseCase
+import com.falon.habit.domain.usecase.IncreaseHabitStreakUseCase
 import com.falon.habit.domain.usecase.ObserveHabitsUseCase
 import com.falon.habit.domain.usecase.ShareHabitWithUseCase
 import com.falon.habit.presentation.mapper.HabitsViewStateMapper
 import com.falon.habit.presentation.model.HabitsEffect
 import com.falon.habit.presentation.model.KeyboardController
-import com.falon.habit.presentation.model.HabitsState
 import com.falon.habit.presentation.model.HabitsViewState
 import com.falon.habit.presentation.viewmodel.HabitsViewModel
 import com.falon.habit.utils.CommonStateFlow
@@ -22,9 +20,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AndroidHabitsViewModel @Inject constructor(
-    increaseNoMediaCounterUseCase: IncreaseNoMediaCounterUseCase,
+    increaseHabitStreakUseCase: IncreaseHabitStreakUseCase,
     shareHabitWithUseCase: ShareHabitWithUseCase,
-    addNewHabitUseCase: AddNewHabitUseCase,
+    addHabitUseCase: AddHabitUseCase,
     observeHabitsUseCase: ObserveHabitsUseCase,
     viewStateMapper: HabitsViewStateMapper,
 ) : ViewModel() {
@@ -32,9 +30,9 @@ class AndroidHabitsViewModel @Inject constructor(
     private val viewModel by lazy {
         HabitsViewModel(
             coroutineScope = viewModelScope,
-            increaseNoMediaCounterUseCase = increaseNoMediaCounterUseCase,
+            increaseHabitStreakUseCase = increaseHabitStreakUseCase,
             shareHabitWithUseCase = shareHabitWithUseCase,
-            addNewHabitUseCase = addNewHabitUseCase,
+            addHabitUseCase = addHabitUseCase,
             viewStateMapper = viewStateMapper,
             observeHabitsUseCase = observeHabitsUseCase,
         )

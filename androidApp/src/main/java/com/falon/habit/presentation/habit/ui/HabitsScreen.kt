@@ -126,7 +126,7 @@ fun CollapsingTitle(
 
     val titleHeight by animateFloatAsState(
         targetValue = if (firstItemIndex.asIntState().intValue > 0 || scrollOffset.asIntState().intValue > 100) 0f else 1f,
-        animationSpec = tween(durationMillis = 300), label = ""
+        animationSpec = tween(durationMillis = 300), label = "Animating Habits"
     )
 
     Column(
