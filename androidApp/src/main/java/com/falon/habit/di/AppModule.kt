@@ -4,10 +4,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.falon.habit.data.FirebaseUserRepository
 import com.falon.habit.data.FirestoreHabitsRepository
-import com.falon.habit.domain.contract.HabitsRepository
-import com.falon.habit.domain.contract.KeyValuePersistentStorage
 import com.falon.habit.data.KeyValuePersistentStorageImpl
 import com.falon.habit.data.mapper.HabitDataMapper
+import com.falon.habit.domain.contract.HabitsRepository
+import com.falon.habit.domain.contract.KeyValuePersistentStorage
 import com.falon.habit.domain.contract.UserRepository
 import com.falon.habit.domain.specification.HabitDisabledSpec
 import com.falon.habit.domain.usecase.AddHabitUseCase
@@ -51,12 +51,11 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideUserRepository(): UserRepository =
-        FirebaseUserRepository()
+    fun provideUserRepository(): UserRepository = FirebaseUserRepository()
 
     @Provides
     fun provideIncreaseNoMediaCounterUseCase(
-        noSocialMediaRepository: HabitsRepository
+        noSocialMediaRepository: HabitsRepository,
     ): IncreaseHabitStreakUseCase = IncreaseHabitStreakUseCase(
         habitsRepository = noSocialMediaRepository,
     )
@@ -77,7 +76,7 @@ object AppModule {
 
     @Provides
     fun provideObserveHabitsUseCase(
-        habitsRepository: HabitsRepository
+        habitsRepository: HabitsRepository,
     ) = ObserveHabitsUseCase(
         habitsRepository = habitsRepository,
     )
@@ -87,7 +86,7 @@ object AppModule {
 
     @Provides
     fun provideHabitViewStateMapper(
-        habitItemMapper: HabitItemMapper
+        habitItemMapper: HabitItemMapper,
     ) = HabitsViewStateMapper(habitItemMapper)
 
     @Provides

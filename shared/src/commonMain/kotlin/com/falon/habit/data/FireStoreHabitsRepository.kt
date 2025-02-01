@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.flow
 
 
 class FirestoreHabitsRepository(
-    private val habitDataMapper: HabitDataMapper
+    private val habitDataMapper: HabitDataMapper,
 ) : HabitsRepository {
 
     private val firestore = Firebase.firestore
@@ -42,7 +42,6 @@ class FirestoreHabitsRepository(
                 emit(habits.map(habitDataMapper::from).map { Ok(it) })
             }
         }.toCommonFlow()
-
 
 
     override suspend fun insertHabit(habit: Habit): Result<Unit, DomainError.DatabaseError> {

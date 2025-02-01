@@ -21,7 +21,9 @@ class HabitDataMapper(
             sharedWithUids = sharedWithUids,
             numberOfDays = StreakCalculations.calculateNumberOfConsecutiveDays(streakTimestamps),
             name = name,
-            streakDateTimes = streakTimestamps.map { Instant.fromEpochMilliseconds(it).toLocalDateTime(timeZone) },
+            streakDateTimes = streakTimestamps.map {
+                Instant.fromEpochMilliseconds(it).toLocalDateTime(timeZone)
+            },
             isDisabled = habitDisabledSpec.isMetBy(streakTimestamps),
         )
     }

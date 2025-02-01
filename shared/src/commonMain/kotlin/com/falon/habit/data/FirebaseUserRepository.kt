@@ -6,7 +6,7 @@ import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.firestore.firestore
 
 
-class FirebaseUserRepository: UserRepository {
+class FirebaseUserRepository : UserRepository {
     private val firestore = Firebase.firestore
 
     // Retrieve a user by email

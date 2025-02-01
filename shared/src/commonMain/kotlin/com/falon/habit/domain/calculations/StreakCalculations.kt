@@ -8,7 +8,10 @@ import kotlinx.datetime.toLocalDateTime
 
 object StreakCalculations {
 
-    fun calculateNumberOfConsecutiveDays(timestamps: List<Long>, timeZone: TimeZone = TimeZone.currentSystemDefault()): Int {
+    fun calculateNumberOfConsecutiveDays(
+        timestamps: List<Long>,
+        timeZone: TimeZone = TimeZone.currentSystemDefault(),
+    ): Int {
         if (timestamps.isEmpty()) return 0
 
         val dates = timestamps

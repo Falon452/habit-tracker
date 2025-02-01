@@ -119,7 +119,7 @@ internal fun HabitsScreen(
 @Composable
 fun CollapsingTitle(
     title: String,
-    listState: LazyListState
+    listState: LazyListState,
 ) {
     val scrollOffset = remember { derivedStateOf { listState.firstVisibleItemScrollOffset } }
     val firstItemIndex = remember { derivedStateOf { listState.firstVisibleItemIndex } }
@@ -334,7 +334,7 @@ private fun FloatingActionButton(onFabClick: () -> Unit) {
 @Composable
 fun HandleEffects(
     viewModel: AndroidHabitsViewModel,
-    focusRequester: FocusRequester
+    focusRequester: FocusRequester,
 ) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -357,7 +357,11 @@ fun HandleEffects(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ClickableCard(item: HabitItem, onClick: (id: String) -> Unit, onLongClick: (id: String) -> Unit) {
+fun ClickableCard(
+    item: HabitItem,
+    onClick: (id: String) -> Unit,
+    onLongClick: (id: String) -> Unit,
+) {
     Card(
         modifier = Modifier
             .minimumInteractiveComponentSize()
@@ -390,4 +394,3 @@ fun ClickableCard(item: HabitItem, onClick: (id: String) -> Unit, onLongClick: (
         }
     }
 }
-

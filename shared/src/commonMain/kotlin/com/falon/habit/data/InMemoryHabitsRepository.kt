@@ -18,7 +18,7 @@ import kotlinx.datetime.toInstant
 
 class InMemoryHabitsRepository(
     db: HabitDatabase,
-): HabitsRepository {
+) : HabitsRepository {
 
     private val queries = db.habitsdbQueries
 
