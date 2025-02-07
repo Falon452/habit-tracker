@@ -8,6 +8,12 @@ plugins {
     alias(libs.plugins.composeCompiler)
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(libs.versions.java.get().toInt())
+    }
+}
+
 android {
     namespace = "com.falon.habit"
     compileSdk = libs.versions.androidCompileSdk.get().toInt()
@@ -39,20 +45,12 @@ android {
             isMinifyEnabled = false
         }
     }
-
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
 }
 
 dependencies {
     implementation(project(":shared"))
     implementation(project(":login:composeApp"))
+    implementation(project(":theme"))
 
     // Compose
     implementation(libs.androidx.activity.compose)
@@ -60,7 +58,7 @@ dependencies {
     implementation(libs.compose.ui.tooling)
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.foundation)
-    implementation(libs.compose.material)
+    implementation(libs.compose.material3)
     implementation(libs.compose.icons.extended)
     implementation(libs.compose.navigation)
 

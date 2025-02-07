@@ -1,5 +1,6 @@
 package com.falon.habit.presentation.splash.ui
 
+import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.Animatable
@@ -16,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -26,6 +28,7 @@ import androidx.navigation.NavController
 import com.falon.habit.R
 import com.falon.habit.presentation.splash.router.AndroidSplashRouter
 import com.falon.habit.presentation.splash.viewmodel.AndroidSplashViewModel
+import com.falon.login.LoginActivity
 import kotlinx.coroutines.launch
 
 @Composable
@@ -35,14 +38,17 @@ fun SplashScreen(
 ) {
     val alpha = remember { Animatable(0f) }
     val scale = remember { Animatable(0.8f) }
-    val signInLauncher =
+    val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
             viewModel.onSignInResult(result)
         }
+    val context = LocalContext.current
     val router = remember {
         AndroidSplashRouter(
-            navController,
-            signInLauncher,
+            navController = navController,
+            loginActivityLauncher = {
+                launcher.launch(Intent(context, LoginActivity::class.java))
+            }
         )
     }
 
