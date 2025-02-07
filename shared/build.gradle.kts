@@ -1,7 +1,7 @@
 plugins {
     id("com.android.library")
-    kotlin("multiplatform") // ✅ Use Kotlin DSL directly
-    kotlin("native.cocoapods") // ✅
+    kotlin("multiplatform")
+    kotlin("native.cocoapods")
     alias(libs.plugins.sqldelight)
     alias(libs.plugins.kotlinSerialization)
 }
