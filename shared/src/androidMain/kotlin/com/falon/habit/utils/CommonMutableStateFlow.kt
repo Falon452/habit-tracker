@@ -1,10 +1,12 @@
 package com.falon.habit.utils
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@OptIn(ExperimentalForInheritanceCoroutinesApi::class)
 actual open class CommonMutableStateFlow<T> actual constructor(
     private val flow: MutableStateFlow<T>
 ) : MutableStateFlow<T> {

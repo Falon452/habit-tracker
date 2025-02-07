@@ -95,7 +95,7 @@ class AndroidSplashViewModel @Inject constructor(
     private companion object {
 
         const val TAG = "AndroidSplashViewModel"
-        const val ANIMATION_DURATION_MILLIS = 2000L
-        const val SPLASH_DURATION_MILLIS = 2200L
+        const val ANIMATION_DURATION_MILLIS = 1000L
+        const val SPLASH_DURATION_MILLIS = 1200L
     }
 }

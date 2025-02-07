@@ -15,7 +15,6 @@ import dev.gitlive.firebase.auth.auth
 import dev.gitlive.firebase.firestore.firestore
 import kotlinx.coroutines.flow.flow
 
-
 class FirestoreHabitsRepository(
     private val habitDataMapper: HabitDataMapper,
 ) : HabitsRepository {

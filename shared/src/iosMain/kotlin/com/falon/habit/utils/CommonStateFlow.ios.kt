@@ -7,12 +7,12 @@ actual open class CommonStateFlow<T> actual constructor(
     private val stateFlow: StateFlow<T>,
 ) : StateFlow<T> {
 
-    override val replayCache: List<T>
+    actual override val replayCache: List<T>
         get() = stateFlow.replayCache
-    override val value: T
+    actual override val value: T
         get() = stateFlow.value
 
-    override suspend fun collect(collector: FlowCollector<T>): Nothing {
+    actual override suspend fun collect(collector: FlowCollector<T>): Nothing {
         TODO()
     }
 }

@@ -3,7 +3,7 @@ package com.falon.habit.data
 import android.content.SharedPreferences
 import com.falon.habit.domain.contract.KeyValuePersistentStorage
 
-actual class KeyValuePersistentStorageImpl(
+class KeyValuePersistentStorageImpl(
     private val sharedPreferences: SharedPreferences,
 ) : KeyValuePersistentStorage {
 

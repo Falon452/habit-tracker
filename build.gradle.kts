@@ -4,13 +4,13 @@ buildscript {
         google()
         mavenCentral()
     }
-    dependencies {
-        classpath(Deps.kotlinGradlePlugin)
-        classpath(Deps.androidBuildTools)
-        classpath(Deps.sqlDelightGradlePlugin)
-        classpath(Deps.hiltGradlePlugin)
-        classpath(Deps.googleServices)
-    }
+}
+
+plugins {
+    alias(libs.plugins.androidApplication) apply false
+    alias(libs.plugins.kotlinAndroid) apply false
+    alias(libs.plugins.googleServices) apply false
+    alias(libs.plugins.hiltGradlePlugin) apply false
 }
 
 allprojects {
@@ -18,8 +18,4 @@ allprojects {
         google()
         mavenCentral()
     }
-}
-
-tasks.register("clean", Delete::class) {
-    delete(rootProject.buildDir)
 }
