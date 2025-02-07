@@ -1,42 +1,49 @@
 plugins {
-    id("com.android.application")
+    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.composeMultiplatform)
     kotlin("android")
-    id("kotlin-kapt")
-    id("dagger.hilt.android.plugin")
-    kotlin("plugin.serialization") version Deps.kotlinVersion
-    id("com.google.gms.google-services")
-    id("org.jetbrains.kotlin.plugin.compose") version Deps.kotlinVersion
+    kotlin("kapt")
+    alias(libs.plugins.hiltGradlePlugin)
+    alias(libs.plugins.googleServices)
+    alias(libs.plugins.composeCompiler)
 }
 
 android {
     namespace = "com.falon.habit"
-    compileSdk = 34
+    compileSdk = libs.versions.androidCompileSdk.get().toInt()
+
     defaultConfig {
         applicationId = "com.falon.habit"
-        minSdk = 24
-        targetSdk = 34
+        minSdk = libs.versions.androidMinSdk.get().toInt()
+        targetSdk = libs.versions.androidTargetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
     }
+
     buildFeatures {
         compose = true
     }
+
     composeOptions {
-        kotlinCompilerExtensionVersion = Deps.composeVersion
+        kotlinCompilerExtensionVersion = libs.versions.composeMultiplatform.get()
     }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
         }
     }
+
     kotlinOptions {
         jvmTarget = "17"
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -45,32 +52,39 @@ android {
 
 dependencies {
     implementation(project(":shared"))
-    implementation(Deps.composeUi)
-    implementation(Deps.composeUiTooling)
-    implementation(Deps.composeUiToolingPreview)
-    implementation(Deps.composeFoundation)
-    implementation(Deps.composeMaterial)
-    implementation(Deps.activityCompose)
-    implementation(Deps.composeIconsExtended)
-    implementation(Deps.composeNavigation)
-    implementation(platform(Deps.firebaseBom))
-    implementation(Deps.firebaseAuth)
-    implementation(Deps.firebaseUiAuth)
-    implementation(Deps.gitLiveFirebaseFireStore)
-    implementation(Deps.gitLiveFirebaseAuth)
-    implementation(Deps.kotlinDateTime)
+    implementation(project(":login:composeApp"))
 
-    implementation(Deps.hiltAndroid)
-    kapt(Deps.hiltAndroidCompiler)
-    kapt(Deps.hiltCompiler)
-    implementation(Deps.hiltNavigationCompose)
+    // Compose
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.tooling)
+    implementation(libs.compose.ui.tooling.preview)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.material)
+    implementation(libs.compose.icons.extended)
+    implementation(libs.compose.navigation)
 
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.ui.auth)
+    implementation(libs.gitlive.firebase.firestore)
+    implementation(libs.gitlive.firebase.auth)
 
-    androidTestImplementation(Deps.testRunner)
-    androidTestImplementation(Deps.jUnit)
-    androidTestImplementation(Deps.composeTesting)
-    debugImplementation(Deps.composeTestManifest)
+    // Kotlin
+    implementation(libs.kotlin.datetime)
 
-    kaptAndroidTest(Deps.hiltAndroidCompiler)
-    androidTestImplementation(Deps.hiltTesting)
+    // Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+    implementation(libs.hilt.navigation.compose)
+
+    // Testing
+    androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.compose.testing)
+    debugImplementation(libs.compose.test.manifest)
+
+    kaptAndroidTest(libs.hilt.android.compiler)
+    androidTestImplementation(libs.hilt.testing)
 }

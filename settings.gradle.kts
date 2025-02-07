@@ -7,13 +7,9 @@ pluginManagement {
     }
 }
 
-dependencyResolutionManagement {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-
 rootProject.name = "habit"
 include(":androidApp")
 include(":shared")
+include(":login")
+include(":login:composeApp")
+include(":login:shared")

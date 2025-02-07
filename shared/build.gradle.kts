@@ -1,13 +1,13 @@
 plugins {
-    kotlin("multiplatform")
-    kotlin("native.cocoapods")
     id("com.android.library")
-    kotlin("plugin.serialization") version Deps.kotlinVersion
-    id("com.squareup.sqldelight")
+    kotlin("multiplatform") // ✅ Use Kotlin DSL directly
+    kotlin("native.cocoapods") // ✅
+    alias(libs.plugins.sqldelight)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 kotlin {
-    android()
+    androidTarget()
     iosX64()
     iosArm64()
     iosSimulatorArm64()
@@ -26,14 +26,14 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(Deps.sqlDelightRuntime)
-                implementation(Deps.sqlDelightCoroutinesExtensions)
-                implementation(Deps.kotlinDateTime)
-                implementation(Deps.kotlinResult)
-                implementation(Deps.gitLiveFirebaseFireStore)
-                implementation(Deps.gitLiveFirebaseAuth)
-                implementation(Deps.kotlinxSerializationJson)
-                implementation(Deps.kotlinxSerializationCore)
+                implementation(libs.sqldelight.runtime)
+                implementation(libs.sqldelight.coroutines.extensions)
+                implementation(libs.kotlin.datetime)
+                implementation(libs.kotlin.result)
+                implementation(libs.gitlive.firebase.firestore)
+                implementation(libs.gitlive.firebase.auth)
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.kotlinx.serialization.core)
             }
         }
         val commonTest by getting {
@@ -43,8 +43,8 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                implementation(Deps.sqlDelightAndroidDriver)
-                implementation(project.dependencies.platform(Deps.firebaseBom))
+                implementation(libs.sqldelight.android.driver)
+                implementation(project.dependencies.platform(libs.firebase.bom))
             }
         }
         val androidUnitTest by getting
@@ -58,7 +58,7 @@ kotlin {
             iosSimulatorArm64Main.dependsOn(this)
 
             dependencies {
-                implementation(Deps.sqlDelightNativeDriver)
+                implementation(libs.sqldelight.native.driver)
             }
         }
         val iosX64Test by getting
@@ -74,11 +74,11 @@ kotlin {
 }
 
 android {
-    namespace = "com.plcoding.translator_kmm"
-    compileSdk = 34
+    namespace = "com.falon.habit.shared"
+    compileSdk = libs.versions.androidCompileSdk.get().toInt()
     defaultConfig {
-        minSdk = 24
-        targetSdk = 34
+        minSdk = libs.versions.androidMinSdk.get().toInt()
+        targetSdk = libs.versions.androidTargetSdk.get().toInt()
     }
 
     compileOptions {
