@@ -2,9 +2,16 @@ package com.falon.login
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import com.falon.login.ui.LoginScreen
 
-class MainActivity : ComponentActivity() {
+class LoginActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContent {
+
+            LoginScreen()
+        }
     }
 }

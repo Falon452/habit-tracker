@@ -22,19 +22,20 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.Card
-import androidx.compose.material.Divider
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.minimumInteractiveComponentSize
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.asIntState
@@ -62,9 +63,10 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
-import com.falon.habit.presentation.Colors
 import com.falon.habit.presentation.habit.viewmodel.AndroidHabitsViewModel
 import com.falon.habit.presentation.model.HabitItem
+import com.falon.habit.theme.LifeBlue
+import com.falon.habit.theme.LifeGrey
 
 @Composable
 internal fun HabitsScreen(
@@ -78,7 +80,7 @@ internal fun HabitsScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
-            floatingActionButton = { FloatingActionButton(viewModel::onFabClick) },
+            floatingActionButton = { HabitFloatingActionButton(viewModel::onFabClick) },
             topBar = {
                 CollapsingTitle(
                     title = "Habits",
@@ -106,7 +108,7 @@ internal fun HabitsScreen(
             focusRequester,
             Modifier
                 .align(Alignment.BottomCenter)
-                .background(MaterialTheme.colors.background),
+                .background(MaterialTheme.colorScheme.background),
         )
         ShareDialog(
             isVisible = viewState.isShareHabitDialogVisible,
@@ -132,7 +134,7 @@ fun CollapsingTitle(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colors.surface),
+            .background(MaterialTheme.colorScheme.surface),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (titleHeight > 0f) {
@@ -144,7 +146,7 @@ fun CollapsingTitle(
             ) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.h4.copy(
+                    style = MaterialTheme.typography.titleSmall.copy(
                         fontSize = (32.sp * titleHeight),
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 2.sp
@@ -159,8 +161,8 @@ fun CollapsingTitle(
                         .background(
                             Brush.linearGradient(
                                 listOf(
-                                    Color(Colors.LifeBlue),
-                                    Color(Colors.LifeGrey)
+                                    LifeBlue,
+                                    LifeGrey,
                                 )
                             ),
                             shape = RoundedCornerShape(8.dp)
@@ -171,7 +173,7 @@ fun CollapsingTitle(
         }
 
         Divider(
-            color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
             thickness = 1.dp
         )
     }
@@ -278,12 +280,12 @@ fun ShareDialog(
             Column(
                 modifier = Modifier
                     .background(
-                        color = MaterialTheme.colors.surface,
+                        color = MaterialTheme.colorScheme.surface,
                         shape = RoundedCornerShape(8.dp)
                     )
                     .border(
                         width = 1.dp,
-                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.12f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
                         shape = RoundedCornerShape(8.dp)
                     )
                     .padding(32.dp),
@@ -293,9 +295,9 @@ fun ShareDialog(
 
                 Text(
                     text = "Share habit with",
-                    style = MaterialTheme.typography.h6,
+                    style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.padding(bottom = 8.dp),
-                    color = MaterialTheme.colors.onSurface
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 TextField(
@@ -303,9 +305,6 @@ fun ShareDialog(
                     onValueChange = { emailInput = it },
                     label = { Text("Enter e-mail") },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = MaterialTheme.colors.surface
-                    )
                 )
 
                 Button(
@@ -313,7 +312,7 @@ fun ShareDialog(
                     modifier = Modifier.align(Alignment.End),
                     shape = MaterialTheme.shapes.small
                 ) {
-                    Text("Search", color = MaterialTheme.colors.onPrimary)
+                    Text("Search", color = MaterialTheme.colorScheme.onPrimary)
                 }
             }
         }
@@ -322,14 +321,23 @@ fun ShareDialog(
 
 
 @Composable
-private fun FloatingActionButton(onFabClick: () -> Unit) {
+private fun HabitFloatingActionButton(onFabClick: () -> Unit) {
     FloatingActionButton(
         onClick = onFabClick,
-        backgroundColor = MaterialTheme.colors.primary
+        elevation = FloatingActionButtonDefaults.elevation(
+            defaultElevation = 6.dp,
+            pressedElevation = 8.dp,
+        ),
+        containerColor = MaterialTheme.colorScheme.primary,
     ) {
-        Icon(imageVector = Icons.Default.Add, contentDescription = "Add Social Media")
+        Icon(
+            imageVector = Icons.Default.Add,
+            contentDescription = "Add Habit",
+            tint = MaterialTheme.colorScheme.onPrimary,
+        )
     }
 }
+
 
 @Composable
 fun HandleEffects(
@@ -373,7 +381,9 @@ fun ClickableCard(
                 onClick = { onClick.invoke(item.id) },
                 onLongClick = { onLongClick.invoke(item.id) }
             ),
-        elevation = if (item.isEnabled) 8.dp else 0.dp,
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = if (item.isEnabled) 2.dp else 0.dp
+        ),
     ) {
         Box(
             modifier = Modifier
