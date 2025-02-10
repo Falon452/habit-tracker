@@ -10,7 +10,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.unit.*
@@ -23,17 +23,17 @@ fun LoginScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5)) // Light gray background
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp),
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Text(
             text = "Sign in",
             style = MaterialTheme.typography.titleLarge,
+
             modifier = Modifier.padding(bottom = 20.dp)
         )
 
-        // Username Field
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
@@ -45,7 +45,6 @@ fun LoginScreen() {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Password Field
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
@@ -58,16 +57,20 @@ fun LoginScreen() {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        TextButton(onClick = { /* Handle Forgot Password */ }) {
-            Text("Forgot Password?", color = Color.Gray)
+        TextButton(
+            onClick = {/* Handle Forgot Password */ },
+        ) {
+            Text("Forgot Password?", color = MaterialTheme.colorScheme.tertiary)
         }
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Sign-in Button
         Button(
             onClick = { /* Handle Login */ },
-            colors = ButtonDefaults.buttonColors(Color.Black),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Sign in", color = Color.White)
@@ -75,9 +78,8 @@ fun LoginScreen() {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Create Account
         TextButton(onClick = { /* Handle Create Account */ }) {
-            Text("Create an account", color = Color.Black)
+            Text("Create an account", color = MaterialTheme.colorScheme.primary)
         }
     }
 }
