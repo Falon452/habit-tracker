@@ -14,6 +14,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.falon.login.R
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun LoginScreen() {
     var username by remember { mutableStateOf("") }
@@ -25,10 +26,13 @@ fun LoginScreen() {
             .background(MaterialTheme.colorScheme.background)
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+
         Text(
             text = "Sign in",
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleLargeEmphasized,
+            color = MaterialTheme.colorScheme.secondary,
             modifier = Modifier.padding(bottom = 20.dp)
         )
 

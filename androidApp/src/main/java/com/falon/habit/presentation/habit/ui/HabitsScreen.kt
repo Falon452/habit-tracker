@@ -27,9 +27,9 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -54,7 +54,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -62,11 +61,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.falon.habit.presentation.habit.viewmodel.AndroidHabitsViewModel
 import com.falon.habit.presentation.model.HabitItem
-import com.falon.habit.theme.LifeBlue
-import com.falon.habit.theme.LifeGrey
+
 
 @Composable
 internal fun HabitsScreen(
@@ -161,8 +160,8 @@ fun CollapsingTitle(
                         .background(
                             Brush.linearGradient(
                                 listOf(
-                                    LifeBlue,
-                                    LifeGrey,
+                                    MaterialTheme.colorScheme.primaryContainer,
+                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
                                 )
                             ),
                             shape = RoundedCornerShape(8.dp)
@@ -172,7 +171,7 @@ fun CollapsingTitle(
             }
         }
 
-        Divider(
+        HorizontalDivider(
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
             thickness = 1.dp
         )
