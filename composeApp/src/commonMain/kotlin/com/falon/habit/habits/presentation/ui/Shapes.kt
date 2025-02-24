@@ -1,4 +1,4 @@
-package com.falon.habit.core.presentation.ui
+package com.falon.habit.habits.presentation.ui
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Shapes

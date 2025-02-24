@@ -1,10 +1,9 @@
 [versions]
 agp = "8.5.2"
-android-compileSdk = "34"
+android-compileSdk = "35"
 android-minSdk = "24"
-android-targetSdk = "34"
+android-targetSdk = "35"
 androidx-activityCompose = "1.10.0"
-androidx-lifecycle = "2.8.4"
 compose-multiplatform = "1.7.0"
 kotlin = "2.1.0"
 sqlDelight = "1.5.4"
@@ -14,13 +13,14 @@ devGitLiveFirebase = "2.1.0"
 googleServices = "4.4.2"
 kotlinResult = "2.0.0"
 dateTime = "0.6.0"
-navigation = "2.8.7"
+jetbrainsViewModelCompose = "2.8.2"
+jetbrainsNavigationCompose = "2.8.0-alpha10"
+
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
-androidx-compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
-androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+jetbrains-androidx-lifecycle-viewmodel-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "jetbrainsViewModelCompose" }
+jetbrains-androidx-navigation-compose = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref = "jetbrainsNavigationCompose" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 gitlive-firebase-firestore = { group = "dev.gitlive", name = "firebase-firestore", version.ref = "devGitLiveFirebase" }
 gitlive-firebase-auth = { group = "dev.gitlive", name = "firebase-auth", version.ref = "devGitLiveFirebase" }
