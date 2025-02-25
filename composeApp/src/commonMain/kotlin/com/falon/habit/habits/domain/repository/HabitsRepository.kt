@@ -1,4 +1,4 @@
-package com.falon.habit.habits.domain.contract
+package com.falon.habit.habits.domain.repository
 
 import com.falon.habit.habits.domain.model.DomainError
 import com.falon.habit.habits.domain.model.Habit

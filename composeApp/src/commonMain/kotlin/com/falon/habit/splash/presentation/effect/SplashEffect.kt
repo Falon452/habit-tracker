@@ -1,4 +1,4 @@
-package com.falon.habit.splash.effect
+package com.falon.habit.splash.presentation.effect
 
 sealed interface SplashEffect {
 

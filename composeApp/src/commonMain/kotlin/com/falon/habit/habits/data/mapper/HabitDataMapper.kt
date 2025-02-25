@@ -11,7 +11,7 @@ import kotlinx.datetime.toLocalDateTime
 
 class HabitDataMapper(
     private val habitDisabledSpec: HabitDisabledSpec,
-    private val timeZone: TimeZone = TimeZone.currentSystemDefault(),
+    private val timeZone: TimeZone,
 ) {
 
     fun from(habitData: HabitData): Habit = with(habitData) {

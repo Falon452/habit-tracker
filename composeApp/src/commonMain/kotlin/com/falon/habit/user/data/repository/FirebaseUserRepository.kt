@@ -1,7 +1,7 @@
-package com.falon.habit.habits.data
+package com.falon.habit.user.data.repository
 
-import com.falon.habit.habits.domain.contract.UserRepository
 import com.falon.habit.habits.domain.model.User
+import com.falon.habit.user.domain.repository.UserRepository
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.firestore.firestore
 

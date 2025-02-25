@@ -38,6 +38,8 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.sqldelight.android.driver)
             implementation(project.dependencies.platform(libs.firebase.bom))
+            implementation(libs.androidx.activity.compose)
+            implementation(libs.koin.android)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -56,6 +58,7 @@ kotlin {
             implementation(libs.kotlinx.serialization.core)
             implementation(libs.jetbrains.androidx.lifecycle.viewmodel.compose)
             implementation(libs.jetbrains.androidx.navigation.compose)
+            implementation(libs.koin.compose.viewmodel.nav)
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)

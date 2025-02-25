@@ -1,4 +1,4 @@
-package com.falon.habit.habits.domain.contract
+package com.falon.habit.habits.domain.repository
 
 interface KeyValuePersistentStorage {
 

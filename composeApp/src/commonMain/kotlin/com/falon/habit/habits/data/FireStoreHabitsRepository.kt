@@ -2,9 +2,9 @@ package com.falon.habit.habits.data
 
 import com.falon.habit.habits.data.mapper.HabitDataMapper
 import com.falon.habit.habits.data.model.HabitData
-import com.falon.habit.habits.domain.contract.HabitsRepository
 import com.falon.habit.habits.domain.model.DomainError
 import com.falon.habit.habits.domain.model.Habit
+import com.falon.habit.habits.domain.repository.HabitsRepository
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result

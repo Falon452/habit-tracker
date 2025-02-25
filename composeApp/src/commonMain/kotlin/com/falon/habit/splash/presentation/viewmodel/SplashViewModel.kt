@@ -1,13 +1,11 @@
-package com.falon.habit.splash.viewmodel
+package com.falon.habit.splash.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.falon.habit.habits.domain.model.User
-import com.falon.habit.habits.domain.usecase.RegisterUserUseCase
-import com.falon.habit.splash.effect.SplashEffect
-import com.falon.habit.splash.effect.SplashEffect.AlphaImage
-import com.falon.habit.splash.effect.SplashEffect.ScaleImage
-import com.falon.habit.splash.router.AndroidSplashRouter
+import com.falon.habit.splash.presentation.effect.SplashEffect
+import com.falon.habit.splash.presentation.router.AndroidSplashRouter
+import com.falon.habit.user.domain.usecase.RegisterUserUseCase
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.auth
 import kotlinx.coroutines.delay
@@ -51,8 +49,8 @@ class SplashViewModel(
     fun onViewCreated() {
         viewModelScope.launch {
             _effects.sendEffect(
-                AlphaImage(ANIMATION_DURATION_MILLIS),
-                ScaleImage(ANIMATION_DURATION_MILLIS),
+                SplashEffect.AlphaImage(ANIMATION_DURATION_MILLIS),
+                SplashEffect.ScaleImage(ANIMATION_DURATION_MILLIS),
             )
             delay(SPLASH_DURATION_MILLIS)
             if (Firebase.auth.currentUser == null) {
@@ -71,8 +69,8 @@ class SplashViewModel(
     ) {
         when (effect) {
             SplashEffect.SignIn -> router.routeToSignIn()
-            is AlphaImage -> alphaImage(effect.millis)
-            is ScaleImage -> scaleImage(effect.millis)
+            is SplashEffect.AlphaImage -> alphaImage(effect.millis)
+            is SplashEffect.ScaleImage -> scaleImage(effect.millis)
             SplashEffect.RouteToHabits -> router.routeToHabitsScreen()
         }
     }
