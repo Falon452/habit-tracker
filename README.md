@@ -1,20 +1,16 @@
-# Setup
-1. SetUp Java 17 (Settings -> Build.. -> Build Tools -> Gradle -> Gradle JDK)
-2. use kdoctor (brew install kdoctor  kdoctor)
+This is a Kotlin Multiplatform project targeting Android, iOS.
 
-My installation worked with ruby 3.3.6. Used rbenv
+* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
+  It contains several subfolders:
+    - `commonMain` is for code that’s common for all targets.
+    - Other folders are for Kotlin code that will be compiled for only the platform indicated in the
+      folder name.
+      For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
+      `iosMain` would be the right folder for such calls.
 
-iosApp uses CocoaPods version manager
+* `/iosApp` contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
+  you need this entry point for your iOS app. This is also where you should add SwiftUI code for
+  your project.
 
-
-# Some info
-Project modules:
-1. androidApp module for Android app
-2. iosApp module for iOS app
-3. shared module for shared logic between iOS and Android
-4. buildSrc module with external dependencies versions
-
-
-Project dependencies:
-1. androidApp consumes shared.androindMain and shared.commonMain 
-2. iosApp consumes shared.iosMain and shared.commonMain
+Learn more
+about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
