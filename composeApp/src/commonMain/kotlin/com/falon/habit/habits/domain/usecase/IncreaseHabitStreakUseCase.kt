@@ -1,7 +1,7 @@
 package com.falon.habit.habits.domain.usecase
 
-import com.falon.habit.habits.domain.contract.HabitsRepository
 import com.falon.habit.habits.domain.model.DomainError
+import com.falon.habit.habits.domain.repository.HabitsRepository
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.asErr
 

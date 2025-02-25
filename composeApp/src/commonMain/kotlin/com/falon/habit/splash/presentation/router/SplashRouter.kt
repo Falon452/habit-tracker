@@ -1,4 +1,4 @@
-package com.falon.habit.splash.router
+package com.falon.habit.splash.presentation.router
 
 interface SplashRouter {
 

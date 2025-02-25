@@ -1,6 +1,8 @@
 package com.falon.habit.habits.presentation.viewmodel
 
 import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.falon.habit.habits.domain.model.Habit
 import com.falon.habit.habits.domain.usecase.AddHabitUseCase
 import com.falon.habit.habits.domain.usecase.IncreaseHabitStreakUseCase
@@ -16,9 +18,7 @@ import com.github.michaelbull.result.filterValues
 import com.github.michaelbull.result.fold
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -34,16 +34,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class HabitsViewModel(
-    coroutineScope: CoroutineScope?,
     private val increaseHabitStreakUseCase: IncreaseHabitStreakUseCase,
     private val shareHabitWithUseCase: ShareHabitWithUseCase,
     observeHabitsUseCase: ObserveHabitsUseCase,
     private val addHabitUseCase: AddHabitUseCase,
     viewStateMapper: HabitsViewStateMapper,
-) {
-
-    private val viewModelScope =
-        coroutineScope ?: CoroutineScope(Dispatchers.Main + SupervisorJob())
+) : ViewModel() {
 
     private val _state = MutableStateFlow(HabitsState())
     val viewState: StateFlow<HabitsViewState> = _state

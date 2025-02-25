@@ -1,7 +1,7 @@
 package com.falon.habit.habits.domain.usecase
 
-import com.falon.habit.habits.domain.contract.HabitsRepository
-import com.falon.habit.habits.domain.contract.UserRepository
+import com.falon.habit.habits.domain.repository.HabitsRepository
+import com.falon.habit.user.domain.repository.UserRepository
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result

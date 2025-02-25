@@ -1,7 +1,7 @@
 package com.falon.habit.habits.domain.usecase
 
-import com.falon.habit.habits.domain.contract.HabitsRepository
 import com.falon.habit.habits.domain.model.Habit
+import com.falon.habit.habits.domain.repository.HabitsRepository
 
 class AddHabitUseCase(
     private val habitsRepository: HabitsRepository,

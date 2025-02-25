@@ -1,5 +1,6 @@
-package com.falon.habit.login.ui
+package com.falon.habit.login.presentation.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import habittracker.composeapp.generated.resources.Res
@@ -31,7 +33,6 @@ import org.jetbrains.compose.resources.painterResource
 fun LoginScreen() {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -110,17 +111,17 @@ fun LoginScreen() {
                         contentColor = MaterialTheme.colorScheme.onSurface
                     ),
                     shape = androidx.compose.foundation.shape.RoundedCornerShape(32.dp),
-                    border = androidx.compose.foundation.BorderStroke(
+                    border = BorderStroke(
                         1.dp,
                         MaterialTheme.colorScheme.onSurface
                     ),
-                    contentPadding = androidx.compose.foundation.layout.PaddingValues(6.dp),
+                    contentPadding = PaddingValues(6.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Icon(
                         painter = painterResource(resource = Res.drawable.icon_google),
                         contentDescription = "Google Icon",
-                        tint = androidx.compose.ui.graphics.Color.Companion.Unspecified,
+                        tint = Color.Companion.Unspecified,
                         modifier = Modifier.size(30.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))

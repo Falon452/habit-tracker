@@ -3,8 +3,8 @@ package com.falon.habit.habits.domain.specification
 import kotlinx.datetime.*
 
 class HabitDisabledSpec(
-    private val clock: Clock = Clock.System,
-    private val timeZone: TimeZone = TimeZone.currentSystemDefault(),
+    private val clock: Clock,
+    private val timeZone: TimeZone,
 ) {
 
     fun isMetBy(increaseUtcTimestamps: List<Long>): Boolean {

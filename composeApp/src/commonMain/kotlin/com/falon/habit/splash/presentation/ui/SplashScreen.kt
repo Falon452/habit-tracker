@@ -1,4 +1,4 @@
-package com.falon.habit.splash.ui
+package com.falon.habit.splash.presentation.ui
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -12,10 +12,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
-import com.falon.habit.splash.router.AndroidSplashRouter
-import com.falon.habit.splash.viewmodel.SplashViewModel
+import com.falon.habit.splash.presentation.router.AndroidSplashRouter
+import com.falon.habit.splash.presentation.viewmodel.SplashViewModel
 import kotlinx.coroutines.launch
 import kotlin.let
 
@@ -42,8 +44,8 @@ fun SplashScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
 
     DisposableEffect(lifecycleOwner) {
-        val lifecycleObserver = androidx.lifecycle.LifecycleEventObserver { _, event ->
-            if (event == androidx.lifecycle.Lifecycle.Event.ON_CREATE) {
+        val lifecycleObserver = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_CREATE) {
                 viewModel.onViewCreated()
             }
         }
@@ -57,7 +59,7 @@ fun SplashScreen(
 
 
     LaunchedEffect(lifecycleOwner.lifecycle) {
-        lifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.effects.collect {
                 viewModel.consumeEffect()?.let {
                     viewModel.onEffect(

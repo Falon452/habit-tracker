@@ -1,6 +1,6 @@
 package com.falon.habit.data
 
-import com.falon.habit.habits.domain.contract.KeyValuePersistentStorage
+import com.falon.habit.habits.domain.repository.KeyValuePersistentStorage
 
 class KeyValuePersistentStorageImpl : KeyValuePersistentStorage {
 
