@@ -29,7 +29,11 @@ fun App() {
 //            HabitsScreen()
                     }
                     composable(route = Routes.SPLASH_SCREEN) {
-                        LoginScreen()
+                        LoginScreen(
+                            onLoginSuccess = {},
+                            onForgotPassword = {},
+                            onNavigateToRegister = {},
+                        )
                     }
                 }
             }
