@@ -1,13 +1,13 @@
-package com.falon.habit.login.presentation.viewmodel
+package com.falon.habit.register.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.falon.habit.Routes
-import com.falon.habit.login.presentation.mapper.LoginState
-import com.falon.habit.login.presentation.mapper.LoginViewState
-import com.falon.habit.login.presentation.mapper.LoginViewStateMapper
-import com.falon.habit.login.presentation.model.LoginEvent
+import com.falon.habit.register.presentation.mapper.RegisterState
+import com.falon.habit.register.presentation.mapper.RegisterViewState
+import com.falon.habit.register.presentation.model.RegisterEvent
+import com.falon.habit.register.presentation.mapper.RegisterViewStateMapper
 import dev.gitlive.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -23,21 +23,21 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 
-class LoginViewModel(
+class RegisterViewModel(
     private val auth: FirebaseAuth,
-    private val viewStateMapper: LoginViewStateMapper
+    private val viewStateMapper: RegisterViewStateMapper
 ) : ViewModel(), KoinComponent {
 
-    private val _state = MutableStateFlow(LoginState())
-    val viewState: StateFlow<LoginViewState> = _state
+    private val _state = MutableStateFlow(RegisterState())
+    val viewState: StateFlow<RegisterViewState> = _state
         .map(viewStateMapper::from)
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(0),
             viewStateMapper.from(_state.value)
         )
-    private val _events = Channel<LoginEvent>()
-    val events: Flow<LoginEvent> = _events.receiveAsFlow()
+    private val _events = Channel<RegisterEvent>()
+    val events: Flow<RegisterEvent> = _events.receiveAsFlow()
 
     fun onEmailChanged(email: String) {
         _state.update { it.copy(email = email) }
@@ -47,7 +47,7 @@ class LoginViewModel(
         _state.update { it.copy(password = password) }
     }
 
-    fun onLogin() {
+    fun onRegister() {
         val currentState = _state.value
         if (currentState.email.isBlank() || currentState.password.isBlank()) {
             _state.update { it.copy(errorMessage = "Email and password cannot be empty") }
@@ -56,10 +56,10 @@ class LoginViewModel(
 
         _state.update { it.copy(isLoading = true, errorMessage = null) }
         viewModelScope.launch(Dispatchers.IO) {
-            runCatching { auth.signInWithEmailAndPassword(currentState.email, currentState.password) }
+            runCatching { auth.createUserWithEmailAndPassword(currentState.email, currentState.password) }
                 .map { result ->
                     _state.update { it.copy(isAuthenticated = true, isLoading = false) }
-                    _events.send(LoginEvent.NavigateToMainScreen)
+                    _events.send(RegisterEvent.NavigateToHabits)
                 }
                 .onFailure { err ->
                     _state.update { it.copy(isLoading = false, errorMessage = err.message) }
@@ -67,29 +67,18 @@ class LoginViewModel(
         }
     }
 
-    fun onGoogleSignInClicked() {
+    fun onNavigateToLogin() {
 
-    }
-
-    fun onForgotPassword() {
-
-    }
-
-    fun onCreateAnAccount() {
-        viewModelScope.launch(Dispatchers.Default) {
-            _events.send(LoginEvent.NavigateToRegister)
-        }
     }
 
     fun onEvent(
-        event: LoginEvent,
+        event: RegisterEvent,
         navController: NavController,
     ) {
         when (event) {
-            LoginEvent.NavigateToMainScreen -> navController.navigate(Routes.HabitsScreen)  {
+            RegisterEvent.NavigateToHabits -> navController.navigate(Routes.HabitsScreen) {
                 popUpTo(Routes.RegisterScreen) { inclusive = true }
             }
-            LoginEvent.NavigateToRegister -> navController.navigate(Routes.RegisterScreen)
         }
     }
 }
