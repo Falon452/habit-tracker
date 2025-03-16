@@ -1,26 +1,20 @@
 package com.falon.habit.login.presentation.ui
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -30,17 +24,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
+import com.falon.habit.login.presentation.auth.GoogleAuthProvider
 import com.falon.habit.login.presentation.viewmodel.LoginViewModel
-import habittracker.composeapp.generated.resources.Res
-import habittracker.composeapp.generated.resources.icon_google
-import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -51,6 +43,13 @@ fun LoginScreen(
     val state by viewModel.viewState.collectAsState()
 
     val lifecycleOwner = LocalLifecycleOwner.current
+    val googleAuthProvider = koinInject<GoogleAuthProvider>()
+    val googleAuthUiProvider = googleAuthProvider.getUiProvider()
+
+    LaunchedEffect(Unit) {
+        viewModel.onViewCreated(googleAuthUiProvider)
+    }
+
     LaunchedEffect(lifecycleOwner.lifecycle, viewModel.events, navController) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.events.collect { event ->
@@ -143,27 +142,12 @@ fun LoginScreen(
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
                 Spacer(modifier = Modifier.height(6.dp))
-                OutlinedButton(
-                    onClick = { viewModel.onGoogleSignInClicked() },
-                    enabled = !state.isLoading,
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        contentColor = MaterialTheme.colorScheme.onSurface
-                    ),
-                    shape = RoundedCornerShape(32.dp),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface),
-                    contentPadding = PaddingValues(6.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(
-                        painter = painterResource(resource = Res.drawable.icon_google),
-                        contentDescription = "Google Icon",
-                        tint = Color.Unspecified,
-                        modifier = Modifier.size(30.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text("Sign in with Google")
-                }
+                GoogleSignInButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    isLoading = state.isLoading,
+                    loginViewModel = viewModel,
+                    googleAuthUiProvider,
+                )
 
                 Spacer(modifier = Modifier.height(12.dp))
 

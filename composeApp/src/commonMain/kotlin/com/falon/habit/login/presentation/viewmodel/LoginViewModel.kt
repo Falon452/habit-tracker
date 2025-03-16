@@ -4,11 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.falon.habit.Routes
+import com.falon.habit.login.presentation.auth.GoogleAuthUiProvider
 import com.falon.habit.login.presentation.mapper.LoginState
 import com.falon.habit.login.presentation.mapper.LoginViewState
 import com.falon.habit.login.presentation.mapper.LoginViewStateMapper
 import com.falon.habit.login.presentation.model.LoginEvent
+import dev.gitlive.firebase.auth.AuthResult
 import dev.gitlive.firebase.auth.FirebaseAuth
+import dev.gitlive.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
@@ -25,7 +28,7 @@ import org.koin.core.component.KoinComponent
 
 class LoginViewModel(
     private val auth: FirebaseAuth,
-    private val viewStateMapper: LoginViewStateMapper
+    private val viewStateMapper: LoginViewStateMapper,
 ) : ViewModel(), KoinComponent {
 
     private val _state = MutableStateFlow(LoginState())
@@ -38,6 +41,10 @@ class LoginViewModel(
         )
     private val _events = Channel<LoginEvent>()
     val events: Flow<LoginEvent> = _events.receiveAsFlow()
+
+    fun onViewCreated(googleAuthUiProvider: GoogleAuthUiProvider) {
+        onSignInClicked(googleAuthUiProvider)
+    }
 
     fun onEmailChanged(email: String) {
         _state.update { it.copy(email = email) }
@@ -67,9 +74,29 @@ class LoginViewModel(
         }
     }
 
-    fun onGoogleSignInClicked() {
+    fun onSignInClicked(googleAuthUiProvider: GoogleAuthUiProvider) {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, errorMessage = null) }
+            val googleAccount = googleAuthUiProvider.signIn()
+            if (googleAccount == null) {
+                return@launch
+            }
 
+            runCatching {
+                val credential = GoogleAuthProvider.credential(googleAccount.token, null)
+                val result = auth.signInWithCredential(credential)
+                result
+            }
+                .map { result: AuthResult ->
+                    _state.update { it.copy(isAuthenticated = true, isLoading = false) }
+                    _events.send(LoginEvent.NavigateToMainScreen)
+                }
+                .onFailure { err ->
+                    _state.update { it.copy(isLoading = false, errorMessage = err.message) }
+                }
+        }
     }
+
 
     fun onForgotPassword() {
 
