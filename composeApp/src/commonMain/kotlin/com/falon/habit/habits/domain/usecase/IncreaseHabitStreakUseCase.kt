@@ -4,6 +4,9 @@ import com.falon.habit.habits.domain.model.DomainError
 import com.falon.habit.habits.domain.repository.HabitsRepository
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.asErr
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 class IncreaseHabitStreakUseCase(
     private val habitsRepository: HabitsRepository,
@@ -15,13 +18,12 @@ class IncreaseHabitStreakUseCase(
             return habit.asErr()
         }
 
-//        val newStreak = Habit(
-//            streakDateTimes = Habit.streakDateTimes.plus(
-//                Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-//            )
-//        )
+        val newStreak = habit.value.copy(
+            streakDateTimes = habit.value.streakDateTimes.plus(
+                Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+            )
+        )
 
-        TODO()
-//        return habitsRepository.replaceHabit(habit)
+        return habitsRepository.replaceHabit(newStreak)
     }
 }

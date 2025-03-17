@@ -3,8 +3,7 @@ package com.falon.habit.habits.presentation.viewmodel
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.falon.habit.habits.domain.model.Habit
-import com.falon.habit.habits.domain.usecase.AddHabitUseCase
+import com.falon.habit.habits.domain.usecase.CreateHabitUseCase
 import com.falon.habit.habits.domain.usecase.IncreaseHabitStreakUseCase
 import com.falon.habit.habits.domain.usecase.ObserveHabitsUseCase
 import com.falon.habit.habits.domain.usecase.ShareHabitWithUseCase
@@ -15,10 +14,10 @@ import com.falon.habit.habits.presentation.model.HabitsState
 import com.falon.habit.habits.presentation.model.HabitsViewState
 import com.github.michaelbull.result.filterErrors
 import com.github.michaelbull.result.filterValues
-import com.github.michaelbull.result.fold
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -37,7 +36,7 @@ class HabitsViewModel(
     private val increaseHabitStreakUseCase: IncreaseHabitStreakUseCase,
     private val shareHabitWithUseCase: ShareHabitWithUseCase,
     observeHabitsUseCase: ObserveHabitsUseCase,
-    private val addHabitUseCase: AddHabitUseCase,
+    private val createHabitUseCase: CreateHabitUseCase,
     viewStateMapper: HabitsViewStateMapper,
 ) : ViewModel() {
 
@@ -46,7 +45,7 @@ class HabitsViewModel(
         .map(viewStateMapper::from)
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.WhileSubscribed(0),
             initialValue = viewStateMapper.from(_state.value)
         )
 
@@ -54,6 +53,7 @@ class HabitsViewModel(
     val effects = _effects.filter { it.isNotEmpty() }
 
     init {
+        _effects.sendEffect(HabitsEffect.ShowToast("DUpa"))
         observeHabitsUseCase.execute()
             .onEach { habits ->
                 _state.value = _state.value.copy(habits = habits.filterValues())
@@ -69,7 +69,7 @@ class HabitsViewModel(
     }
 
     fun onHabitClicked(id: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             increaseHabitStreakUseCase.execute(id)
                 .onSuccess {
                     println("SHOW TOAST TODO")
@@ -81,41 +81,40 @@ class HabitsViewModel(
     }
 
     fun onFabClick() {
-        _state.value = _state.value.copy(
-            isBottomDialogVisible = true
-        )
+        _state.update { it.copy(isBottomDialogVisible = true) }
         viewModelScope.launch(Dispatchers.Default) {
             delay(150)
             _effects.sendEffect(HabitsEffect.RequestFocusOnNewHabit)
         }
     }
 
-    fun onNewHabit() {
-        viewModelScope.launch {
-            Habit.create(_state.value.bottomDialogText).fold(
-                success = {
-                    addHabitUseCase.execute(it)
-                },
-                failure = {
-                    println(it)
-                }
-            )
-            _state.value = _state.value.copy(
-                bottomDialogText = "",
+    fun onDismissBottomSheetDialog() {
+        _state.update {
+            it.copy(
                 isBottomDialogVisible = false,
             )
+        }
+    }
+
+    fun onSaveClicked() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _state.update { it.copy(bottomDialogText = "") }
             _effects.sendEffect(HabitsEffect.HideKeyboard)
+            createHabitUseCase.execute(_state.value.bottomDialogText)
+                .onSuccess {
+                    println("Damian succ")
+                    _effects.sendEffect(HabitsEffect.ShowToast("Success"))
+                }
+                .onFailure {
+                    println("Damian $it")
+                    _effects.sendEffect(HabitsEffect.ShowToast(it.msg))
+                }
         }
     }
 
     fun onNewHabitTextChanged(text: String) {
-        _state.value = _state.value.copy(
-            bottomDialogText = text
-        )
+        _state.update { it.copy(bottomDialogText = text) }
     }
-
-    fun consumeEffect(): HabitsEffect =
-        _effects.getAndUpdate { _effects.value.drop(1) }.first()
 
     fun onEffect(
         effect: HabitsEffect,
@@ -127,10 +126,6 @@ class HabitsViewModel(
             HabitsEffect.HideKeyboard -> keyboardWithFocusOnNewHabit?.hide()
             is HabitsEffect.ShowToast -> showToast(effect.text)
         }
-    }
-
-    private fun <T> MutableStateFlow<List<T>>.sendEffect(effect: T) {
-        update { it + effect }
     }
 
     fun onShareHabitWith(email: String) {
@@ -152,20 +147,31 @@ class HabitsViewModel(
     }
 
     fun onHabitLongClicked(habitId: String) {
-        viewModelScope.launch {
-            _state.value = _state.value.copy(
-                isShareHabitDialogVisible = true,
-                shareHabitId = habitId,
-            )
+        viewModelScope.launch(Dispatchers.Default) {
+            _state.update {
+                it.copy(
+                    isShareHabitDialogVisible = true,
+                    shareHabitId = habitId,
+                )
+            }
         }
     }
 
     fun onShareHabitDialogDismiss() {
-        viewModelScope.launch {
-            _state.value = _state.value.copy(
-                isShareHabitDialogVisible = false,
-                shareHabitId = null,
-            )
+        viewModelScope.launch(Dispatchers.Default) {
+            _state.update {
+                it.copy(
+                    isShareHabitDialogVisible = false,
+                    shareHabitId = null,
+                )
+            }
         }
+    }
+
+    fun consumeEffect(): HabitsEffect =
+        _effects.getAndUpdate { _effects.value.drop(1) }.first()
+
+    private fun <T> MutableStateFlow<List<T>>.sendEffect(effect: T) {
+        update { it + effect }
     }
 }
