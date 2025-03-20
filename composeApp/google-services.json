@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "37856393440-5q5qhrqoo2rvc5uh0qn02urdgt0g878g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.falon.habit",
+            "certificate_hash": "ec6b6dea312a570af75cda5ff68e283b6c53395e"
+          }
+        },
+        {
           "client_id": "37856393440-0t47g15rls04i1kfdvq3jshhfjpl9cq2.apps.googleusercontent.com",
           "client_type": 3
         }

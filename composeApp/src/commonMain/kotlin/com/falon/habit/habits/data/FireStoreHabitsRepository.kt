@@ -46,11 +46,11 @@ class FirestoreHabitsRepository(
         return try {
             val generatedId = firestore.collection("HABITS").document.id
             val synchronizedHabit = habit.copy(id = generatedId)
-            val habitData = habitDataMapper.from(synchronizedHabit)
+            val habitData: HabitData = habitDataMapper.from(synchronizedHabit)
             firestore.collection("HABITS").document(generatedId).set(habitData)
             Ok(Unit)
         } catch (e: Exception) {
-            Err(DomainError.DatabaseError)
+            Err(DomainError.DatabaseError(e.toString()))
         }
     }
 

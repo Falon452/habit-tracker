@@ -6,15 +6,21 @@ import com.google.firebase.FirebaseApp
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 
-class Application : Application() {
+class MyApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        Instance = this
         FirebaseApp.initializeApp(this)
 
         initKoin {
-            androidContext(this@Application)
+            androidContext(this@MyApp)
             androidLogger()
         }
+    }
+
+    companion object {
+
+        var Instance: MyApp? = null
     }
 }

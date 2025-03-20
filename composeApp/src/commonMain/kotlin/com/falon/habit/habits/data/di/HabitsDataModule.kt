@@ -4,7 +4,7 @@ import com.falon.habit.habits.data.FirestoreHabitsRepository
 import com.falon.habit.habits.data.mapper.HabitDataMapper
 import com.falon.habit.habits.domain.repository.HabitsRepository
 import com.falon.habit.habits.domain.specification.HabitDisabledSpec
-import com.falon.habit.habits.domain.usecase.AddHabitUseCase
+import com.falon.habit.habits.domain.usecase.CreateHabitUseCase
 import com.falon.habit.habits.domain.usecase.IncreaseHabitStreakUseCase
 import com.falon.habit.habits.domain.usecase.ObserveHabitsUseCase
 import com.falon.habit.habits.domain.usecase.ShareHabitWithUseCase
@@ -24,7 +24,7 @@ val habitsDataModule = module {
     factoryOf(::IncreaseHabitStreakUseCase)
     factoryOf(::ShareHabitWithUseCase)
     factoryOf(::ObserveHabitsUseCase)
-    factoryOf(::AddHabitUseCase)
+    factoryOf(::CreateHabitUseCase)
     factoryOf(::HabitsViewStateMapper)
     factoryOf(::HabitItemMapper)
 }

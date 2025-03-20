@@ -2,57 +2,25 @@ package com.falon.habit.splash.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.falon.habit.habits.domain.model.User
+import androidx.navigation.NavController
+import com.falon.habit.Routes
 import com.falon.habit.splash.presentation.effect.SplashEffect
-import com.falon.habit.splash.presentation.router.AndroidSplashRouter
-import com.falon.habit.user.domain.usecase.RegisterUserUseCase
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.auth
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.collections.plus
 
-
-class SplashViewModel(
-    private val registerUserUseCase: RegisterUserUseCase,
-) : ViewModel() {
+class SplashViewModel: ViewModel() {
 
     private val _effects: MutableStateFlow<List<SplashEffect>> = MutableStateFlow(emptyList())
     val effects = _effects.asStateFlow()
 
-    fun onSignInResult(isSigned: Boolean) {
-        if (isSigned) {
-            Firebase.auth.currentUser?.let { user ->
-                val email = user.email
-                if (email != null) {
-                    viewModelScope.launch {
-                        registerUserUseCase.execute(User(email = email, uid = user.uid))
-                    }
-                } else {
-//                    Log.i(
-//                        TAG,
-//                        "Email is null for user $user"
-//                    )
-                }
-            }
-
-            _effects.sendEffect(SplashEffect.RouteToHabits)
-        } else {
-            _effects.sendEffect(SplashEffect.SignIn)
-        }
-    }
-
-    fun onViewCreated() {
-        viewModelScope.launch {
-            _effects.sendEffect(
-                SplashEffect.AlphaImage(ANIMATION_DURATION_MILLIS),
-                SplashEffect.ScaleImage(ANIMATION_DURATION_MILLIS),
-            )
-            delay(SPLASH_DURATION_MILLIS)
+    init {
+        viewModelScope.launch(Dispatchers.Default) {
             if (Firebase.auth.currentUser == null) {
                 _effects.sendEffect(SplashEffect.SignIn)
             } else {
@@ -63,15 +31,13 @@ class SplashViewModel(
 
     fun onEffect(
         effect: SplashEffect,
-        router: AndroidSplashRouter,
-        alphaImage: (Long) -> Unit,
-        scaleImage: (Long) -> Unit,
+        navController: NavController,
     ) {
         when (effect) {
-            SplashEffect.SignIn -> router.routeToSignIn()
-            is SplashEffect.AlphaImage -> alphaImage(effect.millis)
-            is SplashEffect.ScaleImage -> scaleImage(effect.millis)
-            SplashEffect.RouteToHabits -> router.routeToHabitsScreen()
+            SplashEffect.SignIn -> navController.navigate(Routes.LoginScreen) {
+                popUpTo(Routes.SplashScreen) { inclusive = true }
+            }
+            SplashEffect.RouteToHabits -> navController.navigate(Routes.HabitsScreen)
         }
     }
 
@@ -80,11 +46,4 @@ class SplashViewModel(
 
     fun consumeEffect(): SplashEffect? =
         _effects.getAndUpdate { it.drop(1) }.firstOrNull()
-
-    private companion object {
-
-        const val TAG = "AndroidSplashViewModel"
-        const val ANIMATION_DURATION_MILLIS = 1000L
-        const val SPLASH_DURATION_MILLIS = 1200L
-    }
 }

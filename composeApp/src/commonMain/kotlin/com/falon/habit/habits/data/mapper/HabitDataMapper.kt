@@ -4,6 +4,7 @@ import com.falon.habit.habits.data.model.HabitData
 import com.falon.habit.habits.domain.calculations.StreakCalculations
 import com.falon.habit.habits.domain.model.Habit
 import com.falon.habit.habits.domain.specification.HabitDisabledSpec
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
@@ -19,7 +20,10 @@ class HabitDataMapper(
             id = id,
             userUid = userUid,
             sharedWithUids = sharedWithUids,
-            numberOfDays = StreakCalculations.calculateNumberOfConsecutiveDays(streakTimestamps),
+            numberOfDays = StreakCalculations.calculateNumberOfConsecutiveDays(
+                streakTimestamps,
+                Clock.System.now().toLocalDateTime(timeZone).date
+            ),
             name = name,
             streakDateTimes = streakTimestamps.map {
                 Instant.fromEpochMilliseconds(it).toLocalDateTime(timeZone)

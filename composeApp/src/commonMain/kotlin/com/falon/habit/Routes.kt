@@ -2,6 +2,8 @@ package com.falon.habit
 
 object Routes {
 
-    const val HABITS_SCREEN = "habits"
-    const val SPLASH_SCREEN = "splash"
+    const val RegisterScreen = "RegisterScreen"
+    const val HabitsScreen = "HabitsScreen"
+    const val LoginScreen = "LoginScreen"
+    const val SplashScreen = "SplashScreen"
 }

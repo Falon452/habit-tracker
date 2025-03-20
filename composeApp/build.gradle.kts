@@ -40,6 +40,9 @@ kotlin {
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.androidx.activity.compose)
             implementation(libs.koin.android)
+            implementation(libs.androidx.credentials)
+            implementation(libs.androidx.credentials.play.services.auth)
+            implementation(libs.google.id)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -62,6 +65,11 @@ kotlin {
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(kotlin("test-common"))
+            implementation(kotlin("test-annotations-common"))
         }
     }
 }

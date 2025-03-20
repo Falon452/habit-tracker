@@ -9,7 +9,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.falon.habit.habits.presentation.ui.AppTheme
+import com.falon.habit.habits.presentation.ui.HabitsScreen
 import com.falon.habit.login.presentation.ui.LoginScreen
+import com.falon.habit.register.presentation.ui.RegisterScreen
+import com.falon.habit.splash.presentation.ui.SplashScreen
 import org.koin.compose.KoinContext
 
 @Composable
@@ -23,13 +26,19 @@ fun App() {
             AppTheme {
                 NavHost(
                     navController = navController,
-                    startDestination = Routes.SPLASH_SCREEN,
+                    startDestination = Routes.SplashScreen,
                 ) {
-                    composable(route = Routes.HABITS_SCREEN) {
-//            HabitsScreen()
+                    composable(route = Routes.SplashScreen) {
+                        SplashScreen(navController)
                     }
-                    composable(route = Routes.SPLASH_SCREEN) {
-                        LoginScreen()
+                    composable(route = Routes.HabitsScreen) {
+                        HabitsScreen()
+                    }
+                    composable(route = Routes.LoginScreen) {
+                        LoginScreen(navController = navController)
+                    }
+                    composable(route = Routes.RegisterScreen) {
+                        RegisterScreen(navController = navController)
                     }
                 }
             }
