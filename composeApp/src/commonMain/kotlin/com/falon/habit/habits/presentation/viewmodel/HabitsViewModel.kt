@@ -53,7 +53,6 @@ class HabitsViewModel(
     val effects = _effects.filter { it.isNotEmpty() }
 
     init {
-        _effects.sendEffect(HabitsEffect.ShowToast("DUpa"))
         observeHabitsUseCase.execute()
             .onEach { habits ->
                 _state.value = _state.value.copy(habits = habits.filterValues())
@@ -98,15 +97,14 @@ class HabitsViewModel(
 
     fun onSaveClicked() {
         viewModelScope.launch(Dispatchers.IO) {
+            val habitName = _state.value.bottomDialogText
             _state.update { it.copy(bottomDialogText = "") }
             _effects.sendEffect(HabitsEffect.HideKeyboard)
-            createHabitUseCase.execute(_state.value.bottomDialogText)
+            createHabitUseCase.execute(habitName)
                 .onSuccess {
-                    println("Damian succ")
                     _effects.sendEffect(HabitsEffect.ShowToast("Success"))
                 }
                 .onFailure {
-                    println("Damian $it")
                     _effects.sendEffect(HabitsEffect.ShowToast(it.msg))
                 }
         }

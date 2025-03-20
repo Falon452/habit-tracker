@@ -3,6 +3,7 @@ package com.falon.habit.habits.domain.usecase
 import com.falon.habit.habits.domain.model.DomainError
 import com.falon.habit.habits.domain.model.Habit
 import com.falon.habit.habits.domain.repository.HabitsRepository
+import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Result
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.auth
@@ -11,7 +12,10 @@ class CreateHabitUseCase(
     private val habitsRepository: HabitsRepository,
 ) {
 
-    suspend fun execute(name: String): Result<Unit, DomainError.DatabaseError> {
+    suspend fun execute(name: String): Result<Unit, DomainError> {
+        if (name.isBlank()) {
+            return Err(DomainError.BlankName("Name should not be blank."))
+        }
         val habit = Habit(
             numberOfDays = 0,
             name = name,

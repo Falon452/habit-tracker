@@ -6,14 +6,16 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -21,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,6 +38,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -62,8 +66,11 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.falon.habit.habits.presentation.model.HabitItem
 import com.falon.habit.habits.presentation.viewmodel.HabitsViewModel
+import com.falon.habit.utils.showToast
+import habittracker.composeapp.generated.resources.Res
+import habittracker.composeapp.generated.resources.fire
 import kotlinx.coroutines.launch
-
+import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
 
@@ -107,9 +114,6 @@ fun HabitsScreen(
                 viewModel::onNewHabitTextChanged,
                 viewModel::onSaveClicked,
                 viewModel::onDismissBottomSheetDialog,
-                Modifier
-                    .align(Alignment.BottomCenter)
-                    .background(MaterialTheme.colorScheme.background),
             )
             ShareDialog(
                 isVisible = viewState.isShareHabitDialogVisible,
@@ -184,44 +188,65 @@ private fun BottomSheetDialog(
     onNewHabitTextChanged: (String) -> Unit,
     onSaveClicked: () -> Unit,
     onDismissRequest: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     val sheetState = rememberModalBottomSheetState()
+
     if (isBottomDialogVisible) {
         ModalBottomSheet(
             onDismissRequest = onDismissRequest,
             sheetState = sheetState,
-            modifier = Modifier.zIndex(2F),
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+            modifier = Modifier.zIndex(2f),
         ) {
-            Row(
+            Column(
                 modifier = Modifier
-                    .padding(16.dp)
                     .fillMaxWidth()
-                    .combinedClickable(
-                        onClick = {},
-                        onLongClick = {},
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Text(
+                    text = "Create a Habit",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
                 TextField(
                     value = bottomDialogText,
                     onValueChange = onNewHabitTextChanged,
-                    modifier = modifier,
-                    placeholder = { Text("New habit") },
+                    placeholder = { Text("Enter habit name") },
+                    textStyle = MaterialTheme.typography.bodyLarge,
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                        focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                        unfocusedIndicatorColor = MaterialTheme.colorScheme.outline,
+                        cursorColor = MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier.fillMaxWidth()
                 )
+
                 Button(
-                    modifier = modifier,
                     onClick = onSaveClicked,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("Save")
+                    Text(
+                        text = "Save",
+                        style = MaterialTheme.typography.labelLarge
+                    )
                 }
             }
         }
     }
 }
+
 
 @Composable
 private fun HabitsColumn(
@@ -325,14 +350,17 @@ fun HandleEffects(
     val keyboardController = LocalSoftwareKeyboardController.current
     LaunchedEffect(lifecycle, viewModel.effects) {
         lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            println("STARTED")
             viewModel.effects.collect {
                 viewModel.onEffect(
                     viewModel.consumeEffect(),
                     keyboardController,
                     showToast = {
-                        coroutineScope.launch {
-                            snackbarHostState.showSnackbar(it)
+                        if (viewModel.viewState.value.isBottomDialogVisible) {
+                            showToast(it)
+                        } else {
+                            coroutineScope.launch {
+                                snackbarHostState.showSnackbar(it)
+                            }
                         }
                     }
                 )
@@ -379,11 +407,23 @@ fun ClickableCard(
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.weight(1f)
             )
-            Text(
-                text = item.numberOfDays.toString(),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (item.numberOfDays > 0) {
+                    Icon(
+                        painter = painterResource(resource = Res.drawable.fire),
+                        contentDescription = "Fire Icon",
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = item.numberOfDays.toString(),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     }
 }

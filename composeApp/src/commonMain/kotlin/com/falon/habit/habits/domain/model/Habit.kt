@@ -13,7 +13,8 @@ data class Habit(
 )
 
 
-sealed interface DomainError {
+sealed class DomainError(open val msg: String) {
 
-    data class DatabaseError(val msg: String) : DomainError
+    data class DatabaseError(override val msg: String) : DomainError(msg)
+    data class BlankName(override val msg: String) : DomainError(msg)
 }
