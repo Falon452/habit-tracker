@@ -37,7 +37,9 @@ class SplashViewModel: ViewModel() {
             SplashEffect.SignIn -> navController.navigate(Routes.LoginScreen) {
                 popUpTo(Routes.SplashScreen) { inclusive = true }
             }
-            SplashEffect.RouteToHabits -> navController.navigate(Routes.HabitsScreen)
+            SplashEffect.RouteToHabits -> navController.navigate(Routes.HabitsScreen) {
+                popUpTo(Routes.SplashScreen) { inclusive = true }
+            }
         }
     }
 

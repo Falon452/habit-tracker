@@ -64,6 +64,8 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavController
+import com.falon.habit.Routes
 import com.falon.habit.habits.presentation.model.HabitItem
 import com.falon.habit.habits.presentation.viewmodel.HabitsViewModel
 import com.falon.habit.utils.showToast
@@ -76,6 +78,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HabitsScreen(
+    navController: NavController,
     viewModel: HabitsViewModel = koinViewModel<HabitsViewModel>(),
 ) {
     val viewState by viewModel.viewState.collectAsState()
@@ -96,6 +99,9 @@ fun HabitsScreen(
                     title = "Habits",
                     listState = listState
                 )
+            },
+            bottomBar = {
+                BottomNavigationBar(navController, Routes.HabitsScreen)
             }
         ) { padding ->
             HabitsColumn(

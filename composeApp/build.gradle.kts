@@ -62,6 +62,7 @@ kotlin {
             implementation(libs.jetbrains.androidx.lifecycle.viewmodel.compose)
             implementation(libs.jetbrains.androidx.navigation.compose)
             implementation(libs.koin.compose.viewmodel.nav)
+            implementation(libs.koala.compose)
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)

@@ -13,6 +13,7 @@ import com.falon.habit.habits.presentation.ui.HabitsScreen
 import com.falon.habit.login.presentation.ui.LoginScreen
 import com.falon.habit.register.presentation.ui.RegisterScreen
 import com.falon.habit.splash.presentation.ui.SplashScreen
+import com.falon.habit.weight.presentation.ui.WeightHistoryScreen
 import org.koin.compose.KoinContext
 
 @Composable
@@ -32,13 +33,17 @@ fun App() {
                         SplashScreen(navController)
                     }
                     composable(route = Routes.HabitsScreen) {
-                        HabitsScreen()
+                        HabitsScreen(navController)
                     }
                     composable(route = Routes.LoginScreen) {
                         LoginScreen(navController = navController)
                     }
                     composable(route = Routes.RegisterScreen) {
                         RegisterScreen(navController = navController)
+                    }
+                    composable(route = Routes.WeightsHistoryScreen) {
+//                        ScrollableLineChart()
+                        WeightHistoryScreen(navController)
                     }
                 }
             }
