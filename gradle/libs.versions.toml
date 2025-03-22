@@ -19,6 +19,7 @@ koin = "4.0.2"
 credentials = "1.5.0"
 googleId = "1.1.1"
 koalaPlot = "0.8.0"
+vico = "2.1.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -41,6 +42,8 @@ sqldelight-coroutines-extensions = { group = "com.squareup.sqldelight", name = "
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-compose-viewmodel-nav = { module = "io.insert-koin:koin-compose-viewmodel-navigation", version.ref = "koin" }
 koala-compose = { module = "io.github.koalaplot:koalaplot-core", version.ref = "koalaPlot" }
+vico-multiplatform-m3 = { group = "com.patrykandpatrick.vico", name = "multiplatform-m3", version.ref = "vico" }
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

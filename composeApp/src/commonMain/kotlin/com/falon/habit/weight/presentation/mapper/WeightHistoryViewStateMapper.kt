@@ -2,12 +2,87 @@ package com.falon.habit.weight.presentation.mapper
 
 import com.falon.habit.weight.presentation.model.WeightHistoryState
 import com.falon.habit.weight.presentation.model.WeightHistoryViewState
+import kotlinx.datetime.LocalDateTime
 
 class WeightHistoryViewStateMapper {
 
     fun from(state: WeightHistoryState): WeightHistoryViewState {
+        val weightHistory = state.weightHistory
+
+        val weightX = weightHistory?.weights?.map { it.time.toEpochDays() } ?: emptyList()
+        val weightY = weightHistory?.weights?.map { it.value } ?: emptyList()
+        val (weightMinY, weightMaxY) = calculateMinMaxY(
+            values = weightY,
+            goal = weightHistory?.weightGoal,
+            minRange = 20f,
+            maxRange = 300f,
+            padding = 10f
+        )
+
+        val fatX = weightHistory?.fats?.map { it.time.toEpochDays() } ?: emptyList()
+        val fatY = weightHistory?.fats?.map { it.value } ?: emptyList()
+        val (fatMinY, fatMaxY) = calculateMinMaxY(
+            values = fatY,
+            goal = weightHistory?.fatGoal,
+            minRange = 0f,
+            maxRange = 100f,
+            padding = 5f
+        )
+
+        val muscleX = weightHistory?.muscles?.map { it.time.toEpochDays() } ?: emptyList()
+        val muscleY = weightHistory?.muscles?.map { it.value } ?: emptyList()
+        val (muscleMinY, muscleMaxY) = calculateMinMaxY(
+            values = muscleY,
+            goal = weightHistory?.muscleGoal,
+            minRange = 0f,
+            maxRange = 100f,
+            padding = 5f
+        )
+        val waterX = weightHistory?.waters?.map { it.time.toEpochDays() } ?: emptyList()
+        val waterY = weightHistory?.waters?.map { it.value } ?: emptyList()
+        val (waterMinY, waterMaxY) = calculateMinMaxY(
+            values = waterY,
+            goal = weightHistory?.waterGoal,
+            minRange = 0f,
+            maxRange = 100f,
+            padding = 5f
+        )
+        val bonesX = weightHistory?.bones?.map { it.time.toEpochDays() } ?: emptyList()
+        val bonesY = weightHistory?.bones?.map { it.value } ?: emptyList()
+        val (bonesMinY, bonesMaxY) = calculateMinMaxY(
+            values = bonesY,
+            goal = weightHistory?.bonesGoal,
+            minRange = 0f,
+            maxRange = 10f,
+            padding = 1f
+        )
+
         return WeightHistoryViewState(
-            weightHistory = state.weightHistory,
+            weightX = weightX,
+            weightY = weightY,
+            weightMinY = weightMinY,
+            weightMaxY = weightMaxY,
+            weightGoalY = weightHistory?.weightGoal,
+            fatX = fatX,
+            fatY = fatY,
+            fatMinY = fatMinY,
+            fatMaxY = fatMaxY,
+            fatGoalY = weightHistory?.fatGoal,
+            muscleX = muscleX,
+            muscleY = muscleY,
+            muscleMinY = muscleMinY,
+            muscleMaxY = muscleMaxY,
+            muscleGoalY = weightHistory?.muscleGoal,
+            waterX = waterX,
+            waterY = waterY,
+            waterMinY = waterMinY,
+            waterMaxY = waterMaxY,
+            waterGoalY = weightHistory?.waterGoal,
+            bonesX = bonesX,
+            bonesY = bonesY,
+            bonesMinY = bonesMinY,
+            bonesMaxY = bonesMaxY,
+            bonesGoalY = weightHistory?.bonesGoal,
             weight = state.weight?.toString() ?: "",
             weightError = isWeightInvalid(state.weight),
             weightErrorMessage = if (isWeightInvalid(state.weight)) "Weight must be between 20 and 300" else "",
@@ -44,7 +119,26 @@ class WeightHistoryViewStateMapper {
             bonesGoal = state.bonesGoal?.toString() ?: "",
             bonesGoalError = isBonesGoalInvalid(state.bonesGoal),
             bonesGoalErrorMessage = if (isBonesGoalInvalid(state.bonesGoal)) "Bones goal must be between 0 and 10" else "",
+            isCurrentMeasurementsExpanded = state.isCurrentMeasurementsExpanded,
+            isGoalsExpanded = state.isGoalsExpanded
         )
+    }
+
+    fun LocalDateTime.toEpochDays(): Int = this.date.toEpochDays()
+
+    fun calculateMinMaxY(
+        values: List<Float>,
+        goal: Float?,
+        minRange: Float,
+        maxRange: Float,
+        padding: Float
+    ): Pair<Double, Double> {
+        val valuesWithGoal = goal?.let { values.plus(it) } ?: values
+        val minValue = (valuesWithGoal.minOrNull() ?: minRange).coerceAtLeast(minRange)
+        val maxValue = (valuesWithGoal.maxOrNull() ?: maxRange).coerceAtMost(maxRange)
+        val minY = (minValue - padding).coerceAtLeast(minRange)
+        val maxY = (maxValue + padding).coerceAtMost(maxRange)
+        return minY.toDouble() to maxY.toDouble()
     }
 
     private fun isWeightInvalid(weight: Float?): Boolean {

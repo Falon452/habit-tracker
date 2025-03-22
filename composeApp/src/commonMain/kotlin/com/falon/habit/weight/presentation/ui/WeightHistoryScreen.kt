@@ -1,5 +1,6 @@
 package com.falon.habit.weight.presentation.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -12,8 +13,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -23,25 +24,7 @@ import com.falon.habit.Routes
 import com.falon.habit.habits.presentation.ui.BottomNavigationBar
 import com.falon.habit.utils.showToast
 import com.falon.habit.weight.presentation.viewmodel.WeightHistoryViewModel
-import io.github.koalaplot.core.ChartLayout
-import io.github.koalaplot.core.legend.LegendLocation
-import io.github.koalaplot.core.line.LinePlot
-import io.github.koalaplot.core.style.LineStyle
-import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
-import io.github.koalaplot.core.xygraph.DefaultPoint
-import io.github.koalaplot.core.xygraph.FloatLinearAxisModel
-import io.github.koalaplot.core.xygraph.LongLinearAxisModel
-import io.github.koalaplot.core.xygraph.XYGraph
-import io.github.koalaplot.core.xygraph.XYGraphScope
-import io.github.koalaplot.core.xygraph.rememberAxisStyle
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,7 +54,11 @@ fun WeightHistoryScreen(
                 .fillMaxSize()
                 .verticalScroll(scrollState)
         ) {
-            ExpandableCard(title = "Current Measurements", false) {
+            ExpandableCard(
+                title = "Current Measurements",
+                onExpandableCardClicked = { viewModel.onCurrentMeasurementsClicked() },
+                expanded = state.isCurrentMeasurementsExpanded,
+            ) {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     MyTextField(
                         inputField = state.weight,
@@ -115,12 +102,16 @@ fun WeightHistoryScreen(
                         onInput = { viewModel.onBonesInputChanged(it) },
                         label = "Bones (kg)"
                     )
-                    SaveButton { viewModel.onSaveClicked() }
+                    SaveButton { viewModel.onSaveClicked(fromCurrentMeasurement = true) }
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
 
-            ExpandableCard(title = "Goals", false) {
+            ExpandableCard(
+                title = "Goals",
+                onExpandableCardClicked = { viewModel.onGoalsClicked() },
+                expanded = state.isGoalsExpanded,
+            ) {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     MyTextField(
                         inputField = state.weightGoal,
@@ -164,105 +155,131 @@ fun WeightHistoryScreen(
                         onInput = { viewModel.onBonesGoalInputChanged(it) },
                         label = "Bones Goal (kg)"
                     )
-                    SaveButton { viewModel.onSaveClicked() }
+                    SaveButton { viewModel.onSaveClicked(fromCurrentMeasurement = false) }
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
 
-            //
-            ScrollableLineChart()
+            // Weight Chart
+            ChartCard(
+                title = "Weight Progress",
+                x = state.weightX,
+                y = state.weightY,
+                goal = state.weightGoalY,
+                markerSuffix = " kg",
+                verticalAxisSuffix = " kg",
+                minY = state.weightMinY,
+                maxY = state.weightMaxY
+            )
+
+            // Fat Chart
+            ChartCard(
+                title = "Fat Progress",
+                x = state.fatX,
+                y = state.fatY,
+                goal = state.fatGoalY,
+                markerSuffix = " %",
+                verticalAxisSuffix = " %",
+                minY = state.fatMinY,
+                maxY = state.fatMaxY
+            )
+
+            // Muscle Chart
+            ChartCard(
+                title = "Muscle Progress",
+                x = state.muscleX,
+                y = state.muscleY,
+                goal = state.muscleGoalY,
+                markerSuffix = " %",
+                verticalAxisSuffix = " %",
+                minY = state.muscleMinY,
+                maxY = state.muscleMaxY
+            )
+
+            // Water Chart
+            ChartCard(
+                title = "Water Progress",
+                x = state.waterX,
+                y = state.waterY,
+                goal = state.waterGoalY,
+                markerSuffix = " %",
+                verticalAxisSuffix = " %",
+                minY = state.waterMinY,
+                maxY = state.waterMaxY
+            )
+
+            // Bones Chart
+            ChartCard(
+                title = "Bones Progress",
+                x = state.bonesX,
+                y = state.bonesY,
+                goal = state.bonesGoalY,
+                markerSuffix = " kg",
+                verticalAxisSuffix = " kg",
+                minY = state.bonesMinY,
+                maxY = state.bonesMaxY
+            )
         }
     }
 }
 
-@OptIn(ExperimentalKoalaPlotApi::class)
 @Composable
-fun ScrollableLineChart() {
-    val data = remember {
-        mutableStateListOf(
-            DefaultPoint(
-                Clock.System.now().epochSeconds,
-                Random.nextFloat()
-            )
-        )
-    }
-    var yDataMin by remember { mutableStateOf(0f) }
-    var yDataMax by remember { mutableStateOf(1f) }
+fun ChartCard(
+    title: String,
+    x: List<Number>,
+    y: List<Number>,
+    goal: Number?,
+    markerSuffix: String,
+    verticalAxisSuffix: String,
+    minY: Double,
+    maxY: Double
+) {
+    // Define a linear gradient brush
+    val gradientBrush = Brush.linearGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.surface,
+            MaterialTheme.colorScheme.surface.copy(alpha = 0.2F)
+        ),
+        start = Offset(0f, 0f),
+        end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+    )
 
-    Column(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(300.dp)
-            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = MaterialTheme.shapes.medium
     ) {
-        Button(
-            onClick = {
-                data.last().y
-                val yNext = Random.nextFloat() * 10F // Dummy float value for the y-axis
-                data.add(DefaultPoint(Clock.System.now().epochSeconds, yNext))
-                yDataMin = min(yDataMin, yNext)
-                yDataMax = max(yDataMax, yNext)
-            },
-            modifier = Modifier.padding(8.dp)
+        // Apply the gradient as the background
+        Box(
+            modifier = Modifier
+                .background(gradientBrush)
+                .padding(16.dp)
         ) {
-            Text("Add Data Point")
-        }
+            Column {
+                // Stylish Title
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
 
-        ChartLayout(
-            modifier = Modifier.padding(16.dp),
-            title = { Text("Time Chart") },
-            legendLocation = LegendLocation.BOTTOM
-        ) {
-            XYGraph(
-                xAxisModel = LongLinearAxisModel(
-                    range = data.first().x..data.last().x + 1
-                ),
-                yAxisModel = FloatLinearAxisModel(
-                    range = (yDataMin)..(yDataMax)
-                ),
-                xAxisLabels = {
-                    val timestamp = Instant.fromEpochSeconds(it)
-                        .toLocalDateTime(TimeZone.currentSystemDefault())
-                    Text(timestamp.toString(), modifier = Modifier.padding(top = 2.dp))
-                },
-                xAxisStyle = rememberAxisStyle(labelRotation = 90),
-                xAxisTitle = {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("Time")
-                    }
-                },
-                yAxisLabels = {
-                    Text(it.toString(), Modifier.absolutePadding(right = 2.dp))
-                },
-                yAxisTitle = {
-                    Box(
-                        modifier = Modifier.fillMaxHeight(),
-                        contentAlignment = Alignment.TopStart
-                    ) {
-                        Text("Value", modifier = Modifier.padding(bottom = 8.dp))
-                    }
-                }
-            ) {
-                chart(data)
+                // Chart
+                Chart(
+                    x = x,
+                    y = y,
+                    goal = goal,
+                    markerSuffix = markerSuffix,
+                    verticalAxisSuffix = verticalAxisSuffix,
+                    minY = minY,
+                    maxY = maxY
+                )
             }
         }
     }
 }
-
-@Composable
-private fun XYGraphScope<Long, Float>.chart(data: List<DefaultPoint<Long, Float>>) {
-    LinePlot(
-        data = data,
-        lineStyle = LineStyle(
-            brush = SolidColor(Color.Black),
-            strokeWidth = 2.dp
-        )
-    )
-}
-
 @Composable
 fun SaveButton(onClick: () -> Unit) {
     Button(
@@ -283,9 +300,12 @@ fun SaveButton(onClick: () -> Unit) {
 }
 
 @Composable
-fun ExpandableCard(title: String, initiallyExpanded: Boolean, content: @Composable () -> Unit) {
-    var expanded by remember { mutableStateOf(initiallyExpanded) }
-
+fun ExpandableCard(
+    title: String,
+    expanded: Boolean,
+    onExpandableCardClicked: () -> Unit,
+    content: @Composable () -> Unit,
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -296,7 +316,7 @@ fun ExpandableCard(title: String, initiallyExpanded: Boolean, content: @Composab
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { expanded = !expanded }
+                    .clickable { onExpandableCardClicked() }
                     .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically

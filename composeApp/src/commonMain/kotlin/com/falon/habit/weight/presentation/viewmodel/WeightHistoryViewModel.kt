@@ -87,54 +87,54 @@ class WeightHistoryViewModel(
     }
 
     fun onWeightInputChanged(weight: String) {
-        _state.update { it.copy(weight = weight.toFloatOrNull()) }
+        _state.update { it.copy(weight = weight.toNotZeroFloatOrNull()) }
     }
 
     fun onFatInputChanged(fat: String) {
-        _state.update { it.copy(fat = fat.toFloatOrNull()) }
+        _state.update { it.copy(fat = fat.toNotZeroFloatOrNull()) }
     }
 
     fun onMuscleInputChanged(muscle: String) {
-        _state.update { it.copy(muscle = muscle.toFloatOrNull()) }
+        _state.update { it.copy(muscle = muscle.toNotZeroFloatOrNull()) }
     }
 
     fun onWaterInputChanged(water: String) {
-        _state.update { it.copy(water = water.toFloatOrNull()) }
+        _state.update { it.copy(water = water.toNotZeroFloatOrNull()?.takeIf { it != 0F }) }
     }
 
     fun onBmiInputChanged(bmi: String) {
-        _state.update { it.copy(bmi = bmi.toFloatOrNull()) }
+        _state.update { it.copy(bmi = bmi.toNotZeroFloatOrNull()) }
     }
 
     fun onBonesInputChanged(bones: String) {
-        _state.update { it.copy(bones = bones.toFloatOrNull()) }
+        _state.update { it.copy(bones = bones.toNotZeroFloatOrNull()) }
     }
 
     fun onWeightGoalInputChanged(weightGoal: String) {
-        _state.update { it.copy(weightGoal = weightGoal.toFloatOrNull()) }
+        _state.update { it.copy(weightGoal = weightGoal.toNotZeroFloatOrNull()) }
     }
 
     fun onFatGoalInputChanged(fatGoal: String) {
-        _state.update { it.copy(fatGoal = fatGoal.toFloatOrNull()) }
+        _state.update { it.copy(fatGoal = fatGoal.toNotZeroFloatOrNull()) }
     }
 
     fun onMuscleGoalInputChanged(muscleGoal: String) {
-        _state.update { it.copy(muscleGoal = muscleGoal.toFloatOrNull()) }
+        _state.update { it.copy(muscleGoal = muscleGoal.toNotZeroFloatOrNull()) }
     }
 
     fun onWaterGoalInputChanged(waterGoal: String) {
-        _state.update { it.copy(waterGoal = waterGoal.toFloatOrNull()) }
+        _state.update { it.copy(waterGoal = waterGoal.toNotZeroFloatOrNull()) }
     }
 
     fun onBmiGoalInputChanged(bmiGoal: String) {
-        _state.update { it.copy(bmiGoal = bmiGoal.toFloatOrNull()) }
+        _state.update { it.copy(bmiGoal = bmiGoal.toNotZeroFloatOrNull()) }
     }
 
     fun onBonesGoalInputChanged(bonesGoal: String) {
-        _state.update { it.copy(bonesGoal = bonesGoal.toFloatOrNull()) }
+        _state.update { it.copy(bonesGoal = bonesGoal.toNotZeroFloatOrNull()) }
     }
 
-    fun onSaveClicked() {
+    fun onSaveClicked(fromCurrentMeasurement: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             val state = _state.value
 
@@ -154,6 +154,13 @@ class WeightHistoryViewModel(
             )
                 .onSuccess {
                     _events.send(ShowToast("Data saved successfully"))
+                    _state.update {
+                        if (fromCurrentMeasurement) {
+                            it.copy(isCurrentMeasurementsExpanded = false)
+                        } else {
+                            it.copy(isGoalsExpanded = false)
+                        }
+                    }
                     clearInputs()
                 }
                 .onFailure { error ->
@@ -183,4 +190,19 @@ class WeightHistoryViewModel(
             is ShowToast -> showToast(event.message)
         }
     }
+
+    fun onCurrentMeasurementsClicked() {
+        _state.update {
+            it.copy(isCurrentMeasurementsExpanded = !_state.value.isCurrentMeasurementsExpanded)
+        }
+    }
+
+    fun onGoalsClicked() {
+        _state.update {
+            it.copy(isGoalsExpanded = !_state.value.isGoalsExpanded)
+        }
+    }
+
+    private fun String.toNotZeroFloatOrNull(): Float? =
+        toFloatOrNull()?.takeIf { it != 0F }
 }

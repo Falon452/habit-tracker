@@ -16,4 +16,6 @@ data class WeightHistoryState(
     val waterGoal: Float? = null,
     val bmiGoal: Float? = null,
     val bonesGoal: Float? = null,
+    val isCurrentMeasurementsExpanded: Boolean = false,
+    val isGoalsExpanded: Boolean = false,
 )

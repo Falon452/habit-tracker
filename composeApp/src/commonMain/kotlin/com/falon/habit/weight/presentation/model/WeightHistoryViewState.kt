@@ -1,9 +1,31 @@
 package com.falon.habit.weight.presentation.model
 
-import com.falon.habit.weight.domain.model.WeightHistory
-
 data class WeightHistoryViewState(
-    val weightHistory: WeightHistory?,
+    val weightX: List<Number>,
+    val weightY: List<Number>,
+    val weightMinY: Double,
+    val weightMaxY: Double,
+    val weightGoalY: Number?,
+    val fatX: List<Number>,
+    val fatY: List<Number>,
+    val fatMinY: Double,
+    val fatMaxY: Double,
+    val fatGoalY: Number?,
+    val muscleX: List<Number>,
+    val muscleY: List<Number>,
+    val muscleMinY: Double,
+    val muscleMaxY: Double,
+    val muscleGoalY: Number?,
+    val waterX: List<Number>,
+    val waterY: List<Number>,
+    val waterMinY: Double,
+    val waterMaxY: Double,
+    val waterGoalY: Number?,
+    val bonesX: List<Number>,
+    val bonesY: List<Number>,
+    val bonesMinY: Double,
+    val bonesMaxY: Double,
+    val bonesGoalY: Number?,
     val weight: String,
     val weightError: Boolean,
     val weightErrorMessage: String,
@@ -40,4 +62,6 @@ data class WeightHistoryViewState(
     val bonesGoal: String,
     val bonesGoalError: Boolean,
     val bonesGoalErrorMessage: String,
+    val isCurrentMeasurementsExpanded: Boolean,
+    val isGoalsExpanded: Boolean,
 )

@@ -63,6 +63,9 @@ kotlin {
             implementation(libs.jetbrains.androidx.navigation.compose)
             implementation(libs.koin.compose.viewmodel.nav)
             implementation(libs.koala.compose)
+            implementation(libs.vico.multiplatform.m3)
+            implementation("network.chaintech:cmpcharts:2.0.3")
+            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
