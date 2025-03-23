@@ -6,6 +6,7 @@ android-targetSdk = "35"
 androidx-activityCompose = "1.10.0"
 compose-multiplatform = "1.7.0"
 kotlin = "2.1.0"
+kotlinxDatetime = "0.6.2"
 sqlDelight = "1.5.4"
 kotlinSerialization = "1.7.1"
 firebaseBom = "33.9.0"
@@ -18,6 +19,7 @@ jetbrainsNavigationCompose = "2.8.0-alpha10"
 koin = "4.0.2"
 credentials = "1.5.0"
 googleId = "1.1.1"
+vico = "2.1.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -31,6 +33,7 @@ gitlive-firebase-firestore = { group = "dev.gitlive", name = "firebase-firestore
 gitlive-firebase-auth = { group = "dev.gitlive", name = "firebase-auth", version.ref = "devGitLiveFirebase" }
 kotlin-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "dateTime" }
 kotlin-result = { group = "com.michael-bull.kotlin-result", name = "kotlin-result", version.ref = "kotlinResult" }
+kotlinx-datetime-v062 = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinSerialization" }
 kotlinx-serialization-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlinSerialization" }
 sqldelight-runtime = { group = "com.squareup.sqldelight", name = "runtime", version.ref = "sqlDelight" }
@@ -39,6 +42,8 @@ sqldelight-native-driver = { group = "com.squareup.sqldelight", name = "native-d
 sqldelight-coroutines-extensions = { group = "com.squareup.sqldelight", name = "coroutines-extensions", version.ref = "sqlDelight" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-compose-viewmodel-nav = { module = "io.insert-koin:koin-compose-viewmodel-navigation", version.ref = "koin" }
+vico-multiplatform-m3 = { group = "com.patrykandpatrick.vico", name = "multiplatform-m3", version.ref = "vico" }
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

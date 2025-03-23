@@ -3,6 +3,7 @@ package com.falon.habit.user.data.repository
 import com.falon.habit.habits.domain.model.User
 import com.falon.habit.user.domain.repository.UserRepository
 import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.auth.auth
 import dev.gitlive.firebase.firestore.firestore
 
 
@@ -30,6 +31,16 @@ class FirebaseUserRepository : UserRepository {
             firestore.collection("USERS").document(user.uid).set(user)
         } catch (e: Exception) {
             println("Error inserting user: ${e.message}")
+        }
+    }
+
+    override fun getCurrentUser(): User? {
+        val current = Firebase.auth.currentUser ?: return null
+        return with(current) {
+            User(
+                email = email,
+                uid = uid,
+            )
         }
     }
 }

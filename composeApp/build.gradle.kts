@@ -62,6 +62,8 @@ kotlin {
             implementation(libs.jetbrains.androidx.lifecycle.viewmodel.compose)
             implementation(libs.jetbrains.androidx.navigation.compose)
             implementation(libs.koin.compose.viewmodel.nav)
+            implementation(libs.vico.multiplatform.m3)
+            implementation(libs.kotlinx.datetime.v062)
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
