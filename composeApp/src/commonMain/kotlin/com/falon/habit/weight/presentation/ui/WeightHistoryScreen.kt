@@ -159,8 +159,6 @@ fun WeightHistoryScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
-
-            // Weight Chart
             ChartCard(
                 title = "Weight Progress",
                 x = state.weightX,
@@ -171,8 +169,6 @@ fun WeightHistoryScreen(
                 minY = state.weightMinY,
                 maxY = state.weightMaxY
             )
-
-            // Fat Chart
             ChartCard(
                 title = "Fat Progress",
                 x = state.fatX,
@@ -183,8 +179,6 @@ fun WeightHistoryScreen(
                 minY = state.fatMinY,
                 maxY = state.fatMaxY
             )
-
-            // Muscle Chart
             ChartCard(
                 title = "Muscle Progress",
                 x = state.muscleX,
@@ -195,8 +189,6 @@ fun WeightHistoryScreen(
                 minY = state.muscleMinY,
                 maxY = state.muscleMaxY
             )
-
-            // Water Chart
             ChartCard(
                 title = "Water Progress",
                 x = state.waterX,
@@ -207,8 +199,6 @@ fun WeightHistoryScreen(
                 minY = state.waterMinY,
                 maxY = state.waterMaxY
             )
-
-            // Bones Chart
             ChartCard(
                 title = "Bones Progress",
                 x = state.bonesX,
@@ -234,7 +224,6 @@ fun ChartCard(
     minY: Double,
     maxY: Double
 ) {
-    // Define a linear gradient brush
     val gradientBrush = Brush.linearGradient(
         colors = listOf(
             MaterialTheme.colorScheme.surface,
@@ -251,22 +240,18 @@ fun ChartCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = MaterialTheme.shapes.medium
     ) {
-        // Apply the gradient as the background
         Box(
             modifier = Modifier
                 .background(gradientBrush)
                 .padding(16.dp)
         ) {
             Column {
-                // Stylish Title
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
-
-                // Chart
                 Chart(
                     x = x,
                     y = y,

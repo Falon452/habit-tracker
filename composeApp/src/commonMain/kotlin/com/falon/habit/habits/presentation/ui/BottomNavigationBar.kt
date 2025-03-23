@@ -35,10 +35,9 @@ fun BottomNavigationBar(navController: NavController, currentRoute: String?) {
             items.forEach { item ->
                 val isSelected = item.route == currentRoute
 
-                // Wrap in Box and make it clickable
                 Box(
                     modifier = Modifier
-                        .weight(1f)  // Each item takes equal space
+                        .weight(1f)
                         .fillMaxHeight()
                         .clickable { navController.navigate(item.route) },
                     contentAlignment = Alignment.Center
